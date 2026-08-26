@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: resume_analyzer
+    ports: ["5432:5432"]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d resume_analyzer"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  python-service:
+    build: ./python-service
+    ports: ["8000:8000"]
+  server:
+    build: ./server
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/resume_analyzer
+      PYTHON_SERVICE_URL: http://python-service:8000
+      CLIENT_URL: http://localhost:5173
+    ports: ["3001:3001"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      python-service: { condition: service_started }
+  client:
+    build: ./client
+    environment:
+      VITE_API_URL: http://localhost:3001
+    ports: ["5173:5173"]
+    depends_on: [server]
+volumes:
+  postgres_data:
+

@@ -1,0 +1,2 @@
+import { Route, Routes } from 'react-router-dom'; import { Layout } from './components/Layout'; import { History } from './pages/History'; import { HistoryDetail } from './pages/HistoryDetail'; import { Home } from './pages/Home';
+export default function App(){return <Routes><Route element={<Layout/>}><Route index element={<Home/>}/><Route path="history" element={<History/>}/><Route path="history/:id" element={<HistoryDetail/>}/></Route></Routes>}

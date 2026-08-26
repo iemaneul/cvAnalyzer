@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Analysis {
+  id             String   @id @default(cuid())
+  fileName       String
+  jobDescription String
+  score          Int
+  resumeSkills   Json
+  jobSkills      Json
+  matchedSkills  Json
+  missingSkills  Json
+  suggestions    Json
+  createdAt      DateTime @default(now())
+}
+
