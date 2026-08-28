@@ -19,5 +19,12 @@ export interface Analysis {
     id: string; priority: 'high' | 'medium' | 'low'; category: string;
     subject: string; title: string; description: string;
   }>;
+  competencies?: {
+    alignment: number | null;
+    resumeCompetencies: string[];
+    requirements: Array<{ competency: string; category: string; importance: 'required' | 'standard' | 'preferred'; matched: boolean }>;
+    matched: string[]; missing: string[];
+    evidence: Array<{ competency: string; category: string; excerpts: string[] }>;
+  };
   scoreBreakdown?: { required: number; standard: number; preferred: number };
 }

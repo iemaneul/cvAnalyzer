@@ -12,6 +12,8 @@ The analyzer also compares supported education levels, language proficiency, and
 
 Each new analysis includes a prioritized action plan. High-priority actions cover required skills and qualification gaps, medium-priority actions improve weak evidence or missing duration, and low-priority actions cover nice-to-have requirements. Checklist progress is stored locally in the browser, and every recommendation explicitly avoids encouraging unsupported claims.
 
+Beyond technologies, the analyzer compares supported professional competencies such as technical leadership, mentoring, communication, problem solving, teamwork, software architecture, agile practices, stakeholder management, product discovery, and remote collaboration. Competency alignment and supporting excerpts are shown separately from the technical score.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`

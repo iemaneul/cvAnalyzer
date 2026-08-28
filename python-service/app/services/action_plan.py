@@ -7,6 +7,7 @@ def build_action_plan(
     evidence_by_skill: dict[str, dict],
     experience_comparisons: list[dict],
     qualifications: dict,
+    competencies: dict,
 ) -> list[dict]:
     actions = []
 
@@ -67,6 +68,17 @@ def build_action_plan(
                 "Add this certification only if you hold it. Otherwise, verify whether it is mandatory and consider it as a future development goal.",
             )
 
+    for item in competencies["requirements"]:
+        if item["matched"]:
+            continue
+        priority = "high" if item["importance"] == "required" else (
+            "medium" if item["importance"] == "standard" else "low"
+        )
+        add(
+            priority, "competency", item["competency"],
+            f"Address the {item['competency']} requirement",
+            f"If your experience demonstrates {item['competency']}, add a specific situation, action, and outcome. Do not include generic claims without supporting evidence.",
+        )
+
     actions.sort(key=lambda item: PRIORITY_ORDER[item["priority"]])
     return actions[:10]
-

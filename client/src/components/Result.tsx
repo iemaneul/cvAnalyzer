@@ -141,6 +141,33 @@ export function Result({ analysis }: { analysis: Analysis }) {
       <Skills title="Job Skills" items={analysis.jobSkills} />
     </div>
 
+    {analysis.competencies && <section>
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div>
+          <h3 className="font-semibold">Professional competencies</h3>
+          <p className="mt-1 text-sm text-slate-500">Leadership, collaboration, engineering, product, and process capabilities.</p>
+        </div>
+        <strong className="text-xl text-indigo-700">
+          {analysis.competencies.alignment === null ? 'No requirements' : `${analysis.competencies.alignment}%`}
+        </strong>
+      </div>
+      {analysis.competencies.requirements.length > 0 ? <div className="flex flex-wrap gap-2">
+        {analysis.competencies.requirements.map((item) => <span key={item.competency}
+          className={`rounded-lg border px-3 py-2 text-sm ${item.matched ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : 'border-rose-200 bg-rose-50 text-rose-700'}`}>
+          {item.matched ? '✓' : '×'} {item.competency}
+          <small className="ml-2 text-slate-500">{importanceLabels[item.importance]}</small>
+        </span>)}
+      </div> : <p className="text-sm text-slate-400">No supported competency requirements were detected.</p>}
+      {analysis.competencies.evidence.some((item) => item.excerpts.length) && <div className="mt-4 grid gap-3 md:grid-cols-2">
+        {analysis.competencies.evidence.filter((item) => item.excerpts.length).map((item) => <details key={item.competency} className="rounded-xl border border-slate-200 p-3">
+          <summary className="cursor-pointer text-sm font-medium text-indigo-700">
+            {item.competency}<small className="ml-2 font-normal capitalize text-slate-400">{item.category}</small>
+          </summary>
+          {item.excerpts.map((excerpt) => <blockquote key={excerpt} className="mt-2 border-l-2 border-indigo-200 pl-3 text-sm text-slate-600">“{excerpt}”</blockquote>)}
+        </details>)}
+      </div>}
+    </section>}
+
     {analysis.evidence?.some((item) => item.excerpts.length) ? <section>
       <h3 className="mb-3 font-semibold">Evidence found in your resume</h3>
       <div className="space-y-3">

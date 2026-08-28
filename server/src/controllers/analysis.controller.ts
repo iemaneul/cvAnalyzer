@@ -21,6 +21,7 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
       experienceAlignment: result.experienceAlignment,
       qualifications: result.qualifications,
       actionPlan: result.actionPlan,
+      competencies: result.competencies,
     }});
     res.status(201).json({ data: analysis });
   } catch (error) { next(error); }

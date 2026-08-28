@@ -40,6 +40,16 @@ export const analysisResultSchema = z.object({
     id: z.string(), priority: z.enum(['high', 'medium', 'low']), category: z.string(),
     subject: z.string(), title: z.string(), description: z.string(),
   })),
+  competencies: z.object({
+    alignment: z.number().int().min(0).max(100).nullable(),
+    resumeCompetencies: z.array(z.string()),
+    requirements: z.array(z.object({
+      competency: z.string(), category: z.string(),
+      importance: z.enum(['required', 'standard', 'preferred']), matched: z.boolean(),
+    })),
+    matched: z.array(z.string()), missing: z.array(z.string()),
+    evidence: z.array(z.object({ competency: z.string(), category: z.string(), excerpts: z.array(z.string()) })),
+  }),
   scoreBreakdown: z.object({ required: z.number(), standard: z.number(), preferred: z.number() }),
   warning: z.string().nullable().optional(),
 });
