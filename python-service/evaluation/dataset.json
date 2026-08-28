@@ -1,0 +1,67 @@
+[
+  {
+    "name": "normalizes Node and React aliases",
+    "kind": "resume_skills",
+    "text": "Built customer interfaces with React.js and APIs using Node.",
+    "expected": ["React", "Node.js"]
+  },
+  {
+    "name": "does not infer JavaScript from React.js",
+    "kind": "resume_skills",
+    "text": "React.js developer focused on accessible products.",
+    "expected": ["React"]
+  },
+  {
+    "name": "recognizes cloud aliases",
+    "kind": "resume_skills",
+    "text": "Deployed workloads to Amazon Web Services and Google Cloud Platform.",
+    "expected": ["AWS", "GCP"]
+  },
+  {
+    "name": "recognizes Portuguese resume technologies",
+    "kind": "resume_skills",
+    "text": "Experiência prática com Python, Django, PostgreSQL e Docker.",
+    "expected": ["Python", "Django", "PostgreSQL", "Docker"]
+  },
+  {
+    "name": "avoids technology matches in ordinary prose",
+    "kind": "resume_skills",
+    "text": "Managed a team and delivered customer support with clear communication.",
+    "expected": []
+  },
+  {
+    "name": "extracts required versus preferred requirements",
+    "kind": "job_requirements",
+    "text": "Required: React and TypeScript. Nice to have: Docker and AWS.",
+    "expected": ["React", "TypeScript", "Docker", "AWS"],
+    "importance": {"React": "required", "TypeScript": "required", "Docker": "preferred", "AWS": "preferred"}
+  },
+  {
+    "name": "ignores explicitly negated requirements",
+    "kind": "job_requirements",
+    "text": "Python is required. Kubernetes is not required.",
+    "expected": ["Python"],
+    "importance": {"Python": "required"}
+  },
+  {
+    "name": "understands Portuguese requirement priorities",
+    "kind": "job_requirements",
+    "text": "Obrigatório: Java e Spring Boot. Diferencial: Kafka.",
+    "expected": ["Java", "Spring Boot", "Kafka"],
+    "importance": {"Java": "required", "Spring Boot": "required", "Kafka": "preferred"}
+  },
+  {
+    "name": "treats unmarked skills as standard",
+    "kind": "job_requirements",
+    "text": "Nossa stack utiliza FastAPI, PostgreSQL e Redis.",
+    "expected": ["FastAPI", "PostgreSQL", "Redis"],
+    "importance": {"FastAPI": "standard", "PostgreSQL": "standard", "Redis": "standard"}
+  },
+  {
+    "name": "recognizes delivery tooling",
+    "kind": "resume_skills",
+    "text": "Maintained GitLab CI/CD pipelines and Kubernetes deployments.",
+    "expected": ["Kubernetes", "GitLab", "CI/CD"]
+  }
+]
+

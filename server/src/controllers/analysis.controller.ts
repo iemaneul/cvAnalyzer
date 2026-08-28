@@ -14,6 +14,12 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
       fileName: path.basename(req.file.originalname).replace(/[^a-zA-Z0-9._-]/g, '_'), jobDescription,
       score: result.score, resumeSkills: result.resumeSkills, jobSkills: result.jobSkills,
       matchedSkills: result.matchedSkills, missingSkills: result.missingSkills, suggestions: result.suggestions,
+      skillRequirements: result.skillRequirements, evidence: result.evidence,
+      scoreBreakdown: result.scoreBreakdown,
+      evidenceQuality: result.evidenceQuality,
+      experienceComparisons: result.experienceComparisons,
+      experienceAlignment: result.experienceAlignment,
+      qualifications: result.qualifications,
     }});
     res.status(201).json({ data: analysis });
   } catch (error) { next(error); }

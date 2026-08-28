@@ -8,5 +8,11 @@ class AnalysisResult(BaseModel):
     matchedSkills: list[str]
     missingSkills: list[str]
     suggestions: list[str]
+    skillRequirements: list[dict]
+    evidence: list[dict]
+    evidenceQuality: int
+    experienceComparisons: list[dict]
+    experienceAlignment: int | None
+    qualifications: dict
+    scoreBreakdown: dict[str, int]
     warning: str | None = None
-

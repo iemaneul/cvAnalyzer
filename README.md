@@ -2,6 +2,14 @@
 
 Full-stack application that compares a PDF resume with a job description, finds matched and missing skills, calculates a compatibility score, and keeps an analysis history.
 
+The analyzer classifies job skills as required, standard, or nice-to-have. The compatibility score is weighted accordingly (3, 2, and 1), and the result includes short resume excerpts as evidence for detected skills. Explicitly negated requirements such as “Docker is not required” are ignored.
+
+Evidence is also classified by resume section. Mentions in professional experience and projects are stronger than isolated mentions in a skills or courses list. When a nearby phrase states years of experience, that context is displayed with the evidence. Evidence quality remains separate from requirement coverage so the primary score stays understandable.
+
+When the job description explicitly requests a duration such as “3+ years of React,” the app compares it with an explicitly documented duration near that skill in the resume. Missing duration is reported as unknown—not as zero years—and experience alignment remains separate from the match score.
+
+The analyzer also compares supported education levels, language proficiency, and common cloud/project-management certifications. Qualification alignment is displayed independently from technical matching, and an unstated language level is marked unknown rather than failed.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`
@@ -38,6 +46,17 @@ venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
+
+### Accuracy evaluation
+
+The repository includes a small, versioned bilingual evaluation dataset. Run it whenever aliases, skills, negation rules, or priority detection change:
+
+```powershell
+cd python-service
+python -m app.evaluation
+```
+
+The command reports skill extraction precision, recall, F1, requirement-priority accuracy, and failing cases. Add anonymized real-world examples to `evaluation/dataset.json` over time; never commit personal resume data.
 
 ### Node (terminal 2)
 
@@ -84,3 +103,5 @@ npm run build
 ```
 
 Scanned/image-only PDFs are intentionally rejected when no text can be extracted. Uploaded PDFs stay in memory only and are never persisted.
+
+The score measures textual alignment with detected requirements; it is not a prediction of hiring decisions. Suggestions never recommend claiming experience the candidate does not genuinely have.

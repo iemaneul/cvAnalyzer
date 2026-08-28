@@ -17,6 +17,12 @@ model Analysis {
   matchedSkills  Json
   missingSkills  Json
   suggestions    Json
+  skillRequirements Json?
+  evidence          Json?
+  scoreBreakdown    Json?
+  evidenceQuality   Int?
+  experienceComparisons Json?
+  experienceAlignment   Int?
+  qualifications        Json?
   createdAt      DateTime @default(now())
 }
-
