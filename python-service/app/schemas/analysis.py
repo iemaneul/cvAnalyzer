@@ -14,5 +14,6 @@ class AnalysisResult(BaseModel):
     experienceComparisons: list[dict]
     experienceAlignment: int | None
     qualifications: dict
+    actionPlan: list[dict]
     scoreBreakdown: dict[str, int]
     warning: str | None = None

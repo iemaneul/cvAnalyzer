@@ -15,5 +15,9 @@ export interface Analysis {
     resumeLanguages: Array<{ language: string; level: string | null; rank: number | null }>;
     resumeCertifications: string[];
   };
+  actionPlan?: Array<{
+    id: string; priority: 'high' | 'medium' | 'low'; category: string;
+    subject: string; title: string; description: string;
+  }>;
   scoreBreakdown?: { required: number; standard: number; preferred: number };
 }

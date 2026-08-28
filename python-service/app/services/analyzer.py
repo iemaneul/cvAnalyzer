@@ -1,6 +1,7 @@
 import re
 
 from app.services.qualifications import analyze_qualifications
+from app.services.action_plan import build_action_plan
 
 SKILLS = {
     "React": ["react", "react.js", "reactjs"], "TypeScript": ["typescript"],
@@ -184,6 +185,10 @@ def analyze(resume_text: str, job_description: str) -> dict:
     experience_alignment = round(
         sum(item["status"] == "met" for item in known_experience) / len(known_experience) * 100
     ) if known_experience else None
+    qualifications = analyze_qualifications(resume_text, job_description)
+    action_plan = build_action_plan(
+        requirements, resume_set, evidence_by_skill, experience_comparisons, qualifications
+    )
     suggestions = []
     if not job_skills:
         suggestions.append("No known skills were detected in the job description.")
@@ -217,7 +222,8 @@ def analyze(resume_text: str, job_description: str) -> dict:
         "evidence": evidence, "evidenceQuality": evidence_quality,
         "experienceComparisons": experience_comparisons,
         "experienceAlignment": experience_alignment,
-        "qualifications": analyze_qualifications(resume_text, job_description),
+        "qualifications": qualifications,
+        "actionPlan": action_plan,
         "scoreBreakdown": {
             "required": _group_score(requirements, resume_set, "required"),
             "standard": _group_score(requirements, resume_set, "standard"),

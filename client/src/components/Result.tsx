@@ -1,4 +1,5 @@
 import type { Analysis } from '../types';
+import { useEffect, useState } from 'react';
 
 const labels = (score: number) =>
   score >= 90 ? 'Excellent Match' : score >= 75 ? 'Good Match' : score >= 50 ? 'Moderate Match' : 'Low Match';
@@ -23,6 +24,44 @@ function Skills({ title, items, kind = 'neutral' }: {
             {kind === 'good' ? '✓ ' : kind === 'bad' ? '× ' : ''}{item}
           </span>)
         : <span className="text-sm text-slate-400">None detected</span>}
+    </div>
+  </section>;
+}
+
+function ActionPlan({ analysis }: { analysis: Analysis }) {
+  const storageKey = `resume-analyzer:actions:${analysis.id}`;
+  const [completed, setCompleted] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(storageKey) ?? '[]'); } catch { return []; }
+  });
+  useEffect(() => { localStorage.setItem(storageKey, JSON.stringify(completed)); }, [completed, storageKey]);
+  if (!analysis.actionPlan?.length) return null;
+  const toggle = (id: string) => setCompleted((current) => current.includes(id)
+    ? current.filter((item) => item !== id) : [...current, id]);
+  const priorityStyle = {
+    high: 'bg-rose-100 text-rose-700', medium: 'bg-amber-100 text-amber-700', low: 'bg-slate-100 text-slate-600',
+  };
+  return <section>
+    <div className="mb-3 flex items-end justify-between gap-3">
+      <div>
+        <h3 className="font-semibold">Prioritized action plan</h3>
+        <p className="mt-1 text-sm text-slate-500">Work from top to bottom and only include claims you can support.</p>
+      </div>
+      <span className="text-sm font-medium text-indigo-700">{completed.length}/{analysis.actionPlan.length} done</span>
+    </div>
+    <div className="space-y-3">
+      {analysis.actionPlan.map((action) => {
+        const done = completed.includes(action.id);
+        return <label key={action.id} className={`flex cursor-pointer gap-3 rounded-xl border p-4 transition ${done ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 hover:border-indigo-200'}`}>
+          <input type="checkbox" checked={done} onChange={() => toggle(action.id)} className="mt-1 h-4 w-4 accent-indigo-600" />
+          <span className="min-w-0 flex-1">
+            <span className="flex flex-wrap items-center gap-2">
+              <strong className={done ? 'text-slate-400 line-through' : 'text-slate-900'}>{action.title}</strong>
+              <small className={`rounded-full px-2 py-0.5 font-semibold uppercase ${priorityStyle[action.priority]}`}>{action.priority}</small>
+            </span>
+            <span className={`mt-1 block text-sm ${done ? 'text-slate-400' : 'text-slate-600'}`}>{action.description}</span>
+          </span>
+        </label>;
+      })}
     </div>
   </section>;
 }
@@ -161,6 +200,8 @@ export function Result({ analysis }: { analysis: Analysis }) {
           <p className="text-sm text-slate-400">No supported qualifications were detected.</p>}
       </div>
     </section>}
+
+    <ActionPlan analysis={analysis} />
 
     <section>
       <h3 className="mb-3 font-semibold">Suggestions</h3>

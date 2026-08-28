@@ -20,6 +20,7 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
       experienceComparisons: result.experienceComparisons,
       experienceAlignment: result.experienceAlignment,
       qualifications: result.qualifications,
+      actionPlan: result.actionPlan,
     }});
     res.status(201).json({ data: analysis });
   } catch (error) { next(error); }

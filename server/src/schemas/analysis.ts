@@ -36,6 +36,10 @@ export const analysisResultSchema = z.object({
     resumeLanguages: z.array(z.object({ language: z.string(), level: z.string().nullable(), rank: z.number().int().nullable() })),
     resumeCertifications: z.array(z.string()),
   }),
+  actionPlan: z.array(z.object({
+    id: z.string(), priority: z.enum(['high', 'medium', 'low']), category: z.string(),
+    subject: z.string(), title: z.string(), description: z.string(),
+  })),
   scoreBreakdown: z.object({ required: z.number(), standard: z.number(), preferred: z.number() }),
   warning: z.string().nullable().optional(),
 });

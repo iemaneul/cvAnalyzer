@@ -24,5 +24,6 @@ model Analysis {
   experienceComparisons Json?
   experienceAlignment   Int?
   qualifications        Json?
+  actionPlan            Json?
   createdAt      DateTime @default(now())
 }

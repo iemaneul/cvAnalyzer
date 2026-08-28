@@ -10,6 +10,8 @@ When the job description explicitly requests a duration such as “3+ years of R
 
 The analyzer also compares supported education levels, language proficiency, and common cloud/project-management certifications. Qualification alignment is displayed independently from technical matching, and an unstated language level is marked unknown rather than failed.
 
+Each new analysis includes a prioritized action plan. High-priority actions cover required skills and qualification gaps, medium-priority actions improve weak evidence or missing duration, and low-priority actions cover nice-to-have requirements. Checklist progress is stored locally in the browser, and every recommendation explicitly avoids encouraging unsupported claims.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`
