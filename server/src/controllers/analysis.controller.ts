@@ -4,6 +4,7 @@ import { prisma } from '../lib/prisma.js';
 import { jobDescriptionSchema } from '../schemas/analysis.js';
 import { analyzeWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
+import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
 
 export async function createAnalysis(req: Request, res: Response, next: NextFunction) {
   try {
@@ -39,6 +40,19 @@ export async function getAnalysis(req: Request, res: Response, next: NextFunctio
     const analysis = await prisma.analysis.findUnique({ where: { id } });
     if (!analysis) throw new AppError(404, 'Analysis not found.');
     res.json({ data: analysis });
+  } catch (error) { next(error); }
+}
+
+export async function compareAnalysisVersions(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const previousId = Array.isArray(req.params.previousId) ? req.params.previousId[0] : req.params.previousId;
+    if (id === previousId) throw new AppError(400, 'Choose two different analyses to compare.');
+    const [current, previous] = await Promise.all([
+      prisma.analysis.findUnique({ where: { id } }), prisma.analysis.findUnique({ where: { id: previousId } }),
+    ]);
+    if (!current || !previous) throw new AppError(404, 'One or both analyses were not found.');
+    res.json({ data: compareAnalyses(current as unknown as ComparableAnalysis, previous as unknown as ComparableAnalysis) });
   } catch (error) { next(error); }
 }
 

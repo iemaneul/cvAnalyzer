@@ -16,6 +16,8 @@ Beyond technologies, the analyzer compares supported professional competencies s
 
 Resume structure analysis checks essential sections, professional links, approximate length, bullet usage, and measurable achievements. Structural findings remain separate from job matching and are added to the prioritized action plan when relevant.
 
+History entries can be compared as resume versions. The comparison reports score deltas across matching, evidence, experience, structure, qualifications, and competencies, plus newly matched skills and resolved or newly introduced gaps. For reliable interpretation, compare versions analyzed against equivalent job requirements.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`

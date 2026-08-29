@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
-import type { Analysis } from '../types';
+import type { Analysis, AnalysisComparison } from '../types';
 
 export function useAnalyzeResume() {
   const client = useQueryClient();
@@ -11,5 +11,8 @@ export function useAnalyzeResume() {
 }
 export function useAnalyses() { return useQuery({ queryKey: ['analyses'], queryFn: async () => (await api.get<{data: Analysis[]}>('/analyses')).data.data }); }
 export function useAnalysis(id?: string) { return useQuery({ queryKey: ['analyses', id], enabled: !!id, queryFn: async () => (await api.get<{data: Analysis}>(`/analyses/${id}`)).data.data }); }
+export function useAnalysisComparison(id?: string, previousId?: string) { return useQuery({
+  queryKey: ['analyses', id, 'compare', previousId], enabled: !!id && !!previousId,
+  queryFn: async () => (await api.get<{data: AnalysisComparison}>(`/analyses/${id}/compare/${previousId}`)).data.data,
+}); }
 export function useDeleteAnalysis() { const client = useQueryClient(); return useMutation({ mutationFn: (id: string) => api.delete(`/analyses/${id}`), onSuccess: () => client.invalidateQueries({ queryKey: ['analyses'] }) }); }
-

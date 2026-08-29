@@ -36,3 +36,15 @@ export interface Analysis {
   };
   scoreBreakdown?: { required: number; standard: number; preferred: number };
 }
+
+export interface AnalysisComparison {
+  current: { id: string; fileName: string; createdAt: string; score: number };
+  previous: { id: string; fileName: string; createdAt: string; score: number };
+  deltas: {
+    score: number; evidenceQuality: number | null; experienceAlignment: number | null;
+    structure: number | null; qualifications: number | null; competencies: number | null;
+  };
+  skills: { newlyMatched: string[]; noLongerMatched: string[]; resolvedMissing: string[]; newMissing: string[] };
+  structure: { resolvedIssues: string[]; newIssues: string[] };
+  actions: { resolved: string[]; added: string[] };
+}
