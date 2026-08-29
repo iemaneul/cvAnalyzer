@@ -8,6 +8,7 @@ def build_action_plan(
     experience_comparisons: list[dict],
     qualifications: dict,
     competencies: dict,
+    structure: dict,
 ) -> list[dict]:
     actions = []
 
@@ -78,6 +79,13 @@ def build_action_plan(
             priority, "competency", item["competency"],
             f"Address the {item['competency']} requirement",
             f"If your experience demonstrates {item['competency']}, add a specific situation, action, and outcome. Do not include generic claims without supporting evidence.",
+        )
+
+    for issue in structure["issues"]:
+        priority = "high" if issue["severity"] == "high" else "medium"
+        add(
+            priority, "resume_structure", issue["code"], "Improve the resume structure",
+            issue["message"],
         )
 
     actions.sort(key=lambda item: PRIORITY_ORDER[item["priority"]])

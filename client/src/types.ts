@@ -26,5 +26,13 @@ export interface Analysis {
     matched: string[]; missing: string[];
     evidence: Array<{ competency: string; category: string; excerpts: string[] }>;
   };
+  structure?: {
+    score: number;
+    sections: Array<{ key: string; label: string; detected: boolean }>;
+    missingSections: string[];
+    contacts: { email: boolean; linkedin: boolean; github: boolean };
+    wordCount: number; estimatedPages: number; bulletCount: number; quantifiedAchievements: number;
+    issues: Array<{ severity: 'high' | 'medium' | 'low'; code: string; message: string }>;
+  };
   scoreBreakdown?: { required: number; standard: number; preferred: number };
 }

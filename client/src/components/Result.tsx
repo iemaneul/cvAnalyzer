@@ -100,6 +100,34 @@ export function Result({ analysis }: { analysis: Analysis }) {
       </div>
     </section>}
 
+    {analysis.structure && <section>
+      <div className="mb-3 flex items-end justify-between gap-3">
+        <div>
+          <h3 className="font-semibold">Resume structure</h3>
+          <p className="mt-1 text-sm text-slate-500">Section coverage, contact links, length, and measurable outcomes.</p>
+        </div>
+        <strong className="text-xl text-indigo-700">{analysis.structure.score}%</strong>
+      </div>
+      <div className="mb-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="rounded-xl bg-slate-50 p-3"><small className="text-slate-500">Words</small><p className="text-xl font-bold">{analysis.structure.wordCount}</p></div>
+        <div className="rounded-xl bg-slate-50 p-3"><small className="text-slate-500">Estimated pages</small><p className="text-xl font-bold">{analysis.structure.estimatedPages}</p></div>
+        <div className="rounded-xl bg-slate-50 p-3"><small className="text-slate-500">Bullets</small><p className="text-xl font-bold">{analysis.structure.bulletCount}</p></div>
+        <div className="rounded-xl bg-slate-50 p-3"><small className="text-slate-500">Measured results</small><p className="text-xl font-bold">{analysis.structure.quantifiedAchievements}</p></div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {analysis.structure.sections.map((section) => <span key={section.key}
+          className={`rounded-full px-3 py-1 text-sm ${section.detected ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+          {section.detected ? '✓' : '×'} {section.label}
+        </span>)}
+      </div>
+      {analysis.structure.issues.length > 0 && <div className="mt-4 space-y-2">
+        {analysis.structure.issues.map((issue) => <p key={issue.code}
+          className={`rounded-lg p-3 text-sm ${issue.severity === 'high' ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700'}`}>
+          {issue.message}
+        </p>)}
+      </div>}
+    </section>}
+
     {analysis.skillRequirements?.length ? <section>
       <h3 className="mb-3 font-semibold">Job requirements by priority</h3>
       <div className="flex flex-wrap gap-2">

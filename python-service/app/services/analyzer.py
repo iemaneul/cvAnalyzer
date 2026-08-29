@@ -3,6 +3,7 @@ import re
 from app.services.qualifications import analyze_qualifications
 from app.services.action_plan import build_action_plan
 from app.services.competencies import analyze_competencies
+from app.services.structure import analyze_structure
 
 SKILLS = {
     "React": ["react", "react.js", "reactjs"], "TypeScript": ["typescript"],
@@ -188,9 +189,10 @@ def analyze(resume_text: str, job_description: str) -> dict:
     ) if known_experience else None
     qualifications = analyze_qualifications(resume_text, job_description)
     competencies = analyze_competencies(resume_text, job_description)
+    structure = analyze_structure(resume_text)
     action_plan = build_action_plan(
         requirements, resume_set, evidence_by_skill, experience_comparisons, qualifications,
-        competencies,
+        competencies, structure,
     )
     suggestions = []
     if not job_skills:
@@ -228,6 +230,7 @@ def analyze(resume_text: str, job_description: str) -> dict:
         "qualifications": qualifications,
         "actionPlan": action_plan,
         "competencies": competencies,
+        "structure": structure,
         "scoreBreakdown": {
             "required": _group_score(requirements, resume_set, "required"),
             "standard": _group_score(requirements, resume_set, "standard"),

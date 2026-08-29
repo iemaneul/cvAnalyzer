@@ -14,6 +14,8 @@ Each new analysis includes a prioritized action plan. High-priority actions cove
 
 Beyond technologies, the analyzer compares supported professional competencies such as technical leadership, mentoring, communication, problem solving, teamwork, software architecture, agile practices, stakeholder management, product discovery, and remote collaboration. Competency alignment and supporting excerpts are shown separately from the technical score.
 
+Resume structure analysis checks essential sections, professional links, approximate length, bullet usage, and measurable achievements. Structural findings remain separate from job matching and are added to the prioritized action plan when relevant.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`

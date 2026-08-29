@@ -50,6 +50,15 @@ export const analysisResultSchema = z.object({
     matched: z.array(z.string()), missing: z.array(z.string()),
     evidence: z.array(z.object({ competency: z.string(), category: z.string(), excerpts: z.array(z.string()) })),
   }),
+  structure: z.object({
+    score: z.number().int().min(0).max(100),
+    sections: z.array(z.object({ key: z.string(), label: z.string(), detected: z.boolean() })),
+    missingSections: z.array(z.string()),
+    contacts: z.object({ email: z.boolean(), linkedin: z.boolean(), github: z.boolean() }),
+    wordCount: z.number().int(), estimatedPages: z.number().int(), bulletCount: z.number().int(),
+    quantifiedAchievements: z.number().int(),
+    issues: z.array(z.object({ severity: z.enum(['high', 'medium', 'low']), code: z.string(), message: z.string() })),
+  }),
   scoreBreakdown: z.object({ required: z.number(), standard: z.number(), preferred: z.number() }),
   warning: z.string().nullable().optional(),
 });

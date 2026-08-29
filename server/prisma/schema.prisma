@@ -26,5 +26,6 @@ model Analysis {
   qualifications        Json?
   actionPlan            Json?
   competencies          Json?
+  structure             Json?
   createdAt      DateTime @default(now())
 }

@@ -16,5 +16,6 @@ class AnalysisResult(BaseModel):
     qualifications: dict
     actionPlan: list[dict]
     competencies: dict
+    structure: dict
     scoreBreakdown: dict[str, int]
     warning: str | None = None
