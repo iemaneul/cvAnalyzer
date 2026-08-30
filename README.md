@@ -20,6 +20,8 @@ History entries can be compared as resume versions. The comparison reports score
 
 Saved analyses can be exported as a paginated PDF report containing the principal scores, skill gaps, prioritized action plan, suggestions, and a clear interpretation disclaimer.
 
+Before running an analysis, users can request a temporary preview of the text extracted from the PDF. This makes multi-column ordering, missing content, and broken characters visible without persisting the extracted resume text.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`

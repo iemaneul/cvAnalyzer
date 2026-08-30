@@ -20,4 +20,10 @@ describe('API validation', () => {
     expect(response.status).toBe(400);
     expect(response.body.error.message).toBe('The selected file must be a PDF.');
   });
+
+  it('requires a PDF for extracted-text preview', async () => {
+    const response = await request(app).post('/api/extract');
+    expect(response.status).toBe(400);
+    expect(response.body.error.message).toBe('A PDF resume is required.');
+  });
 });

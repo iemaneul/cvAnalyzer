@@ -37,3 +37,25 @@ export async function generateReportWithPython(analysis: unknown): Promise<Buffe
     throw new AppError(502, 'Unable to generate the PDF report.');
   }
 }
+
+export async function extractTextWithPython(file: Express.Multer.File): Promise<{ text: string; characters: number }> {
+  const form = new FormData();
+  form.append('resume', file.buffer, { filename: file.originalname, contentType: 'application/pdf' });
+  try {
+    const response = await axios.post(`${process.env.PYTHON_SERVICE_URL ?? 'http://localhost:8000'}/extract`, form, {
+      headers: form.getHeaders(), timeout: 15_000, maxBodyLength: 6 * 1024 * 1024,
+    });
+    if (typeof response.data?.text !== 'string' || typeof response.data?.characters !== 'number') {
+      throw new AppError(502, 'The extraction service returned an invalid response.');
+    }
+    return response.data;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    if (axios.isAxiosError(error)) {
+      if (!error.response) throw new AppError(503, 'The extraction service is temporarily unavailable.');
+      const detail = error.response.data?.detail;
+      throw new AppError(error.response.status === 422 ? 422 : 502, typeof detail === 'string' ? detail : 'Unable to extract resume text.');
+    }
+    throw new AppError(502, 'Unable to extract resume text.');
+  }
+}

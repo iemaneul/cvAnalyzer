@@ -27,6 +27,17 @@ async def analyze_resume(
     return analyze(text, jobDescription)
 
 
+@app.post("/extract")
+async def extract_resume_text(resume: UploadFile = File(...)) -> dict:
+    if resume.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="The selected file must be a PDF.")
+    try:
+        text = extract_pdf_text(await resume.read())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    return {"text": text, "characters": len(text)}
+
+
 @app.post("/report")
 def create_report(analysis: dict = Body(...)) -> Response:
     content = build_report(analysis)

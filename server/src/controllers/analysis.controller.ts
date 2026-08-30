@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import path from 'node:path';
 import { prisma } from '../lib/prisma.js';
 import { jobDescriptionSchema } from '../schemas/analysis.js';
-import { analyzeWithPython, generateReportWithPython } from '../services/python.service.js';
+import { analyzeWithPython, extractTextWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
 
@@ -66,6 +66,13 @@ export async function downloadAnalysisReport(req: Request, res: Response, next: 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${safeName}-analysis.pdf"`);
     res.send(report);
+  } catch (error) { next(error); }
+}
+
+export async function previewResumeText(req: Request, res: Response, next: NextFunction) {
+  try {
+    if (!req.file) throw new AppError(400, 'A PDF resume is required.');
+    res.json({ data: await extractTextWithPython(req.file) });
   } catch (error) { next(error); }
 }
 
