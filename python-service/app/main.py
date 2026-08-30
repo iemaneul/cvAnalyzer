@@ -1,8 +1,9 @@
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile, Response
 
 from app.schemas.analysis import AnalysisResult
 from app.services.analyzer import analyze
 from app.services.pdf import extract_pdf_text
+from app.services.report import build_report
 
 app = FastAPI(title="cvAnalyzer Service", version="1.0.0")
 
@@ -25,3 +26,8 @@ async def analyze_resume(
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     return analyze(text, jobDescription)
 
+
+@app.post("/report")
+def create_report(analysis: dict = Body(...)) -> Response:
+    content = build_report(analysis)
+    return Response(content=content, media_type="application/pdf")

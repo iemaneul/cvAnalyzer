@@ -18,6 +18,8 @@ Resume structure analysis checks essential sections, professional links, approxi
 
 History entries can be compared as resume versions. The comparison reports score deltas across matching, evidence, experience, structure, qualifications, and competencies, plus newly matched skills and resolved or newly introduced gaps. For reliable interpretation, compare versions analyzed against equivalent job requirements.
 
+Saved analyses can be exported as a paginated PDF report containing the principal scores, skill gaps, prioritized action plan, suggestions, and a clear interpretation disclaimer.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`

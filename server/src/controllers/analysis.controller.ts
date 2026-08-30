@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import path from 'node:path';
 import { prisma } from '../lib/prisma.js';
 import { jobDescriptionSchema } from '../schemas/analysis.js';
-import { analyzeWithPython } from '../services/python.service.js';
+import { analyzeWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
 
@@ -53,6 +53,19 @@ export async function compareAnalysisVersions(req: Request, res: Response, next:
     ]);
     if (!current || !previous) throw new AppError(404, 'One or both analyses were not found.');
     res.json({ data: compareAnalyses(current as unknown as ComparableAnalysis, previous as unknown as ComparableAnalysis) });
+  } catch (error) { next(error); }
+}
+
+export async function downloadAnalysisReport(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const analysis = await prisma.analysis.findUnique({ where: { id } });
+    if (!analysis) throw new AppError(404, 'Analysis not found.');
+    const report = await generateReportWithPython(analysis);
+    const safeName = analysis.fileName.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${safeName}-analysis.pdf"`);
+    res.send(report);
   } catch (error) { next(error); }
 }
 

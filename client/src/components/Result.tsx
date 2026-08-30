@@ -1,5 +1,7 @@
 import type { Analysis } from '../types';
 import { useEffect, useState } from 'react';
+import { Download, Loader2 } from 'lucide-react';
+import { api } from '../services/api';
 
 const labels = (score: number) =>
   score >= 90 ? 'Excellent Match' : score >= 75 ? 'Good Match' : score >= 50 ? 'Moderate Match' : 'Low Match';
@@ -67,7 +69,23 @@ function ActionPlan({ analysis }: { analysis: Analysis }) {
 }
 
 export function Result({ analysis }: { analysis: Analysis }) {
+  const [downloading, setDownloading] = useState(false);
+  const downloadReport = async () => {
+    setDownloading(true);
+    try {
+      const response = await api.get(`/analyses/${analysis.id}/report`, { responseType: 'blob' });
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = url; link.download = `${analysis.fileName.replace(/\.pdf$/i, '')}-analysis.pdf`; link.click();
+      URL.revokeObjectURL(url);
+    } finally { setDownloading(false); }
+  };
   return <div className="mt-10 space-y-7 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="flex justify-end">
+      <button onClick={downloadReport} disabled={downloading} className="flex items-center gap-2 rounded-lg border border-indigo-200 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 disabled:opacity-50">
+        {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download PDF report
+      </button>
+    </div>
     <div className="flex flex-col items-center justify-center border-b border-slate-100 pb-7">
       <div className="grid h-32 w-32 place-items-center rounded-full"
         style={{ background: `conic-gradient(#4f46e5 ${analysis.score}%, #e2e8f0 0)` }}>
