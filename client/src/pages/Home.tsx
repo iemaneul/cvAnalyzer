@@ -8,6 +8,7 @@ export function Home() {
   const [file, setFile] = useState<File>();
   const [job, setJob] = useState('');
   const [localError, setLocalError] = useState('');
+  const [privateMode, setPrivateMode] = useState(false);
   const analysis = useAnalyzeResume();
   const extraction = useExtractResumeText();
 
@@ -21,7 +22,7 @@ export function Home() {
     setFile(next);
   };
   const removeFile = () => { setFile(undefined); extraction.reset(); analysis.reset(); };
-  const submit = () => { if (file) analysis.mutate({ file, jobDescription: job }); };
+  const submit = () => { if (file) analysis.mutate({ file, jobDescription: job, saveAnalysis: !privateMode }); };
   const error = localError || (extraction.error ? errorMessage(extraction.error) : '') || (analysis.error ? errorMessage(analysis.error) : '');
 
   return <>
@@ -50,6 +51,10 @@ export function Home() {
       </div>
       <div className="md:col-span-2">
         {error && <p className="mb-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-700">{error}</p>}
+        <label className="mb-4 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <input type="checkbox" checked={privateMode} onChange={(event) => setPrivateMode(event.target.checked)} className="mt-1 h-4 w-4 accent-indigo-600" />
+          <span><strong className="block text-sm">Private analysis</strong><span className="text-sm text-slate-500">Process this resume without saving the result to history. The PDF is never stored permanently.</span></span>
+        </label>
         <div className="grid gap-3 sm:grid-cols-[auto_1fr]">
           <button disabled={!file || extraction.isPending} onClick={() => file && extraction.mutate(file)}
             className="flex items-center justify-center gap-2 rounded-xl border border-indigo-200 px-5 py-3 font-semibold text-indigo-700 hover:bg-indigo-50 disabled:opacity-40">

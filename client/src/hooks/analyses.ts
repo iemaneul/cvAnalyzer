@@ -4,10 +4,10 @@ import type { Analysis, AnalysisComparison } from '../types';
 
 export function useAnalyzeResume() {
   const client = useQueryClient();
-  return useMutation({ mutationFn: async ({ file, jobDescription }: { file: File; jobDescription: string }) => {
-    const form = new FormData(); form.append('resume', file); form.append('jobDescription', jobDescription);
+  return useMutation({ mutationFn: async ({ file, jobDescription, saveAnalysis = true }: { file: File; jobDescription: string; saveAnalysis?: boolean }) => {
+    const form = new FormData(); form.append('resume', file); form.append('jobDescription', jobDescription); form.append('saveAnalysis', String(saveAnalysis));
     return (await api.post<{data: Analysis}>('/analyze', form)).data.data;
-  }, onSuccess: () => client.invalidateQueries({ queryKey: ['analyses'] }) });
+  }, onSuccess: (analysis) => { if (analysis.isSaved !== false) client.invalidateQueries({ queryKey: ['analyses'] }); } });
 }
 export function useExtractResumeText() { return useMutation({ mutationFn: async (file: File) => {
   const form = new FormData(); form.append('resume', file);

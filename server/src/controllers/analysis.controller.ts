@@ -1,18 +1,28 @@
 import type { NextFunction, Request, Response } from 'express';
 import path from 'node:path';
+import { randomUUID } from 'node:crypto';
 import { prisma } from '../lib/prisma.js';
 import { jobDescriptionSchema } from '../schemas/analysis.js';
 import { analyzeWithPython, extractTextWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
+import { shouldSaveAnalysis } from '../utils/privacy.js';
 
 export async function createAnalysis(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.file) throw new AppError(400, 'A PDF resume is required.');
     const jobDescription = jobDescriptionSchema.parse(req.body.jobDescription);
     const result = await analyzeWithPython(req.file, jobDescription);
+    const fileName = path.basename(req.file.originalname).replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (!shouldSaveAnalysis(req.body.saveAnalysis)) {
+      res.status(200).json({ data: {
+        id: `private-${randomUUID()}`, fileName, jobDescription, ...result,
+        createdAt: new Date().toISOString(), isSaved: false,
+      }});
+      return;
+    }
     const analysis = await prisma.analysis.create({ data: {
-      fileName: path.basename(req.file.originalname).replace(/[^a-zA-Z0-9._-]/g, '_'), jobDescription,
+      fileName, jobDescription,
       score: result.score, resumeSkills: result.resumeSkills, jobSkills: result.jobSkills,
       matchedSkills: result.matchedSkills, missingSkills: result.missingSkills, suggestions: result.suggestions,
       skillRequirements: result.skillRequirements, evidence: result.evidence,
@@ -25,7 +35,7 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
       competencies: result.competencies,
       structure: result.structure,
     }});
-    res.status(201).json({ data: analysis });
+    res.status(201).json({ data: { ...analysis, isSaved: true } });
   } catch (error) { next(error); }
 }
 

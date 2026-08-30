@@ -22,6 +22,8 @@ Saved analyses can be exported as a paginated PDF report containing the principa
 
 Before running an analysis, users can request a temporary preview of the text extracted from the PDF. This makes multi-column ordering, missing content, and broken characters visible without persisting the extracted resume text.
 
+Private analysis mode processes the resume without creating a PostgreSQL history record. Uploaded PDFs remain memory-only, and private checklist progress is not written to browser storage. Features that require a saved record, such as later comparison and report download, are intentionally unavailable for that private result.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`
