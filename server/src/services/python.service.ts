@@ -38,14 +38,15 @@ export async function generateReportWithPython(analysis: unknown): Promise<Buffe
   }
 }
 
-export async function extractTextWithPython(file: Express.Multer.File): Promise<{ text: string; characters: number }> {
+export async function extractTextWithPython(file: Express.Multer.File): Promise<{ text: string; characters: number; method: 'native' | 'ocr'; pages: number }> {
   const form = new FormData();
   form.append('resume', file.buffer, { filename: file.originalname, contentType: 'application/pdf' });
   try {
     const response = await axios.post(`${process.env.PYTHON_SERVICE_URL ?? 'http://localhost:8000'}/extract`, form, {
       headers: form.getHeaders(), timeout: 15_000, maxBodyLength: 6 * 1024 * 1024,
     });
-    if (typeof response.data?.text !== 'string' || typeof response.data?.characters !== 'number') {
+    if (typeof response.data?.text !== 'string' || typeof response.data?.characters !== 'number' ||
+      !['native', 'ocr'].includes(response.data?.method) || typeof response.data?.pages !== 'number') {
       throw new AppError(502, 'The extraction service returned an invalid response.');
     }
     return response.data;

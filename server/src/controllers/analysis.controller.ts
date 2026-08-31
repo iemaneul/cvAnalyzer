@@ -22,7 +22,7 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
       return;
     }
     const analysis = await prisma.analysis.create({ data: {
-      fileName, jobDescription,
+      fileName, jobDescription, extractionMethod: result.extractionMethod,
       score: result.score, resumeSkills: result.resumeSkills, jobSkills: result.jobSkills,
       matchedSkills: result.matchedSkills, missingSkills: result.missingSkills, suggestions: result.suggestions,
       skillRequirements: result.skillRequirements, evidence: result.evidence,

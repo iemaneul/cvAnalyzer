@@ -10,6 +10,7 @@ datasource db {
 model Analysis {
   id             String   @id @default(cuid())
   fileName       String
+  extractionMethod String?
   jobDescription String
   score          Int
   resumeSkills   Json

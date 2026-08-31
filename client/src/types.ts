@@ -1,5 +1,6 @@
 export interface Analysis {
   id: string; fileName: string; jobDescription: string; score: number;
+  extractionMethod?: 'native' | 'ocr';
   resumeSkills: string[]; jobSkills: string[]; matchedSkills: string[];
   missingSkills: string[]; suggestions: string[]; createdAt: string;
   isSaved?: boolean;

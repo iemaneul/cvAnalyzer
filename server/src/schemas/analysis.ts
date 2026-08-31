@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const analysisResultSchema = z.object({
+  extractionMethod: z.enum(['native', 'ocr']),
   score: z.number().int().min(0).max(100),
   resumeSkills: z.array(z.string()),
   jobSkills: z.array(z.string()),

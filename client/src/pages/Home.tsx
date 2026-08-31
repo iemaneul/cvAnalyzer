@@ -69,7 +69,7 @@ export function Home() {
       </div>
     </div>
     {extraction.data && <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-3 flex items-center justify-between"><div><h2 className="font-semibold">Extracted text preview</h2><p className="text-sm text-slate-500">Confirm that headings, columns, and content were read correctly before analyzing.</p></div><span className="text-xs text-slate-400">{extraction.data.characters} characters</span></div>
+      <div className="mb-3 flex items-center justify-between"><div><h2 className="font-semibold">Extracted text preview</h2><p className="text-sm text-slate-500">Confirm that headings, columns, and content were read correctly before analyzing.</p></div><span className="text-right text-xs text-slate-400">{extraction.data.characters} characters · {extraction.data.pages} pages<br/><strong className={extraction.data.method === 'ocr' ? 'text-amber-600' : 'text-emerald-600'}>{extraction.data.method === 'ocr' ? 'OCR extraction' : 'Native text'}</strong></span></div>
       <textarea readOnly value={extraction.data.text} className="min-h-72 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 p-4 font-mono text-sm leading-6 text-slate-700" />
       <p className="mt-2 text-xs text-slate-400">This preview is returned temporarily and is not saved as an analysis.</p>
     </section>}

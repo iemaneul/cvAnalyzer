@@ -83,7 +83,7 @@ export function Result({ analysis }: { analysis: Analysis }) {
   };
   return <div className="mt-10 space-y-7 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
     <div className="flex items-center justify-between gap-3">
-      {analysis.isSaved === false ? <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">Private analysis · not saved</span> : <span />}
+      <div className="flex flex-wrap gap-2">{analysis.isSaved === false && <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">Private analysis · not saved</span>}{analysis.extractionMethod === 'ocr' && <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Scanned PDF · OCR</span>}</div>
       {analysis.isSaved !== false &&
       <button onClick={downloadReport} disabled={downloading} className="flex items-center gap-2 rounded-lg border border-indigo-200 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 disabled:opacity-50">
         {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download PDF report

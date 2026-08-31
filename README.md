@@ -24,6 +24,8 @@ Before running an analysis, users can request a temporary preview of the text ex
 
 Private analysis mode processes the resume without creating a PostgreSQL history record. Uploaded PDFs remain memory-only, and private checklist progress is not written to browser storage. Features that require a saved record, such as later comparison and report download, are intentionally unavailable for that private result.
 
+Image-only PDFs use an OCR fallback powered by Tesseract in the Python container. Native extraction remains the default; OCR is limited to 10 pages, supports English and Portuguese, and is identified explicitly in previews and results.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`

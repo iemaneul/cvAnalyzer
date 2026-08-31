@@ -2,6 +2,7 @@ from pydantic import BaseModel
 
 
 class AnalysisResult(BaseModel):
+    extractionMethod: str
     score: int
     resumeSkills: list[str]
     jobSkills: list[str]

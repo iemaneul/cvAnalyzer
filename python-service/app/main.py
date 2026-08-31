@@ -2,7 +2,7 @@ from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile, Respon
 
 from app.schemas.analysis import AnalysisResult
 from app.services.analyzer import analyze
-from app.services.pdf import extract_pdf_text
+from app.services.pdf import extract_pdf
 from app.services.report import build_report
 
 app = FastAPI(title="cvAnalyzer Service", version="1.0.0")
@@ -21,10 +21,12 @@ async def analyze_resume(
         raise HTTPException(status_code=400, detail="The selected file must be a PDF.")
     content = await resume.read()
     try:
-        text = extract_pdf_text(content)
+        extraction = extract_pdf(content)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    return analyze(text, jobDescription)
+    result = analyze(extraction.text, jobDescription)
+    result["extractionMethod"] = extraction.method
+    return result
 
 
 @app.post("/extract")
@@ -32,10 +34,10 @@ async def extract_resume_text(resume: UploadFile = File(...)) -> dict:
     if resume.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="The selected file must be a PDF.")
     try:
-        text = extract_pdf_text(await resume.read())
+        extraction = extract_pdf(await resume.read())
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
-    return {"text": text, "characters": len(text)}
+    return {"text": extraction.text, "characters": len(extraction.text), "method": extraction.method, "pages": extraction.pages}
 
 
 @app.post("/report")
