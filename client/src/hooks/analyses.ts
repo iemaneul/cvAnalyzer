@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
-import type { Analysis, AnalysisComparison } from '../types';
+import type { Analysis, AnalysisComparison, PaginatedAnalyses } from '../types';
 
 export function useAnalyzeResume() {
   const client = useQueryClient();
@@ -13,7 +13,10 @@ export function useExtractResumeText() { return useMutation({ mutationFn: async 
   const form = new FormData(); form.append('resume', file);
   return (await api.post<{data: {text: string; characters: number; method: 'native' | 'ocr'; pages: number}}>('/extract', form)).data.data;
 } }); }
-export function useAnalyses() { return useQuery({ queryKey: ['analyses'], queryFn: async () => (await api.get<{data: Analysis[]}>('/analyses')).data.data }); }
+export function useAnalyses(page = 1, limit = 10) { return useQuery({
+  queryKey: ['analyses', { page, limit }],
+  queryFn: async () => (await api.get<PaginatedAnalyses>('/analyses', { params: { page, limit } })).data,
+}); }
 export function useAnalysis(id?: string) { return useQuery({ queryKey: ['analyses', id], enabled: !!id, queryFn: async () => (await api.get<{data: Analysis}>(`/analyses/${id}`)).data.data }); }
 export function useAnalysisComparison(id?: string, previousId?: string) { return useQuery({
   queryKey: ['analyses', id, 'compare', previousId], enabled: !!id && !!previousId,

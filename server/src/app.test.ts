@@ -7,6 +7,7 @@ describe('API validation', () => {
     const response = await request(app).get('/health');
     expect(response.status).toBe(200);
     expect(response.body.data.status).toBe('ok');
+    expect(response.headers['x-request-id']).toBeTruthy();
   });
 
   it('requires a PDF on POST /api/analyze', async () => {

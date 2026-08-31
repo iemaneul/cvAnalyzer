@@ -1,0 +1,133 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: python-service
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: python-service/requirements.txt
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: python -m app.evaluation
+
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run build
+      - run: npm test
+      - run: npm audit --audit-level=critical
+
+  client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm audit --audit-level=high
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: resume_analyzer
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d resume_analyzer"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/resume_analyzer
+      PYTHON_SERVICE_URL: http://localhost:8000
+      CLIENT_URL: http://localhost:5173
+      PORT: 3001
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: python-service/requirements.txt
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: pip install -r python-service/requirements.txt
+      - run: npm ci
+        working-directory: server
+      - run: npx prisma generate && npx prisma migrate deploy && npm run build
+        working-directory: server
+      - name: Start internal services
+        run: |
+          (cd python-service && nohup python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 > /tmp/python.log 2>&1 &)
+          (cd server && nohup node dist/index.js > /tmp/server.log 2>&1 &)
+      - name: Wait for readiness
+        run: |
+          for attempt in {1..30}; do
+            curl --fail --silent http://localhost:3001/health/ready && exit 0
+            sleep 2
+          done
+          cat /tmp/python.log /tmp/server.log
+          exit 1
+      - name: Analyze a real PDF through the full stack
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import httpx
+          from reportlab.pdfgen.canvas import Canvas
+
+          path = Path("/tmp/integration-resume.pdf")
+          canvas = Canvas(str(path))
+          canvas.drawString(72, 760, "Professional Experience")
+          canvas.drawString(72, 735, "Built production applications with React, TypeScript, Python and Docker.")
+          canvas.save()
+          job = "Required: React, TypeScript and Python. Nice to have: Docker and AWS for cloud deployments."
+          with path.open("rb") as resume:
+              response = httpx.post("http://localhost:3001/api/analyze", files={"resume": ("resume.pdf", resume, "application/pdf")}, data={"jobDescription": job})
+          response.raise_for_status()
+          assert response.json()["data"]["score"] > 0
+          history = httpx.get("http://localhost:3001/api/analyses?page=1&limit=10")
+          history.raise_for_status()
+          assert history.json()["meta"]["total"] == 1
+          PY
+

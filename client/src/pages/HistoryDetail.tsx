@@ -9,11 +9,11 @@ export function HistoryDetail() {
   const navigate = useNavigate();
   const [previousId, setPreviousId] = useState('');
   const { data, isLoading, error } = useAnalysis(id);
-  const { data: analyses } = useAnalyses();
+  const { data: analyses } = useAnalyses(1, 100);
   const remove = useDeleteAnalysis();
   if (isLoading) return <p>Loading...</p>;
   if (error || !data) return <p className="text-rose-600">Analysis not found.</p>;
-  const previousOptions = analyses?.filter((item) => item.id !== id && new Date(item.createdAt) < new Date(data.createdAt)) ?? [];
+  const previousOptions = analyses?.data.filter((item) => item.id !== id && new Date(item.createdAt) < new Date(data.createdAt)) ?? [];
   return <div>
     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
       <div>
@@ -43,4 +43,3 @@ export function HistoryDetail() {
     <Result analysis={data} />
   </div>;
 }
-

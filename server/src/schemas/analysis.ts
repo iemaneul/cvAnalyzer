@@ -65,4 +65,8 @@ export const analysisResultSchema = z.object({
 });
 
 export const jobDescriptionSchema = z.string().trim().min(50, 'Job description must be at least 50 characters.');
+export const paginationSchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+});
 export type AnalysisResult = z.infer<typeof analysisResultSchema>;

@@ -26,6 +26,15 @@ Private analysis mode processes the resume without creating a PostgreSQL history
 
 Image-only PDFs use an OCR fallback powered by Tesseract in the Python container. Native extraction remains the default; OCR is limited to 10 pages, supports English and Portuguese, and is identified explicitly in previews and results.
 
+## Operational quality
+
+- GET /health is a lightweight liveness probe.
+- GET /health/ready verifies PostgreSQL and the Python service.
+- API responses include x-request-id; completed requests are logged as structured JSON.
+- Analysis history is paginated with page and limit query parameters.
+- Docker Compose waits for healthy dependencies before starting consumers.
+- GitHub Actions validates Python, Node, and React independently and runs a full Node-to-Python-to-PostgreSQL analysis on every push to main and every pull request.
+
 ## Architecture
 
 `React → Node/Express → Python/FastAPI → Node/Prisma → PostgreSQL`

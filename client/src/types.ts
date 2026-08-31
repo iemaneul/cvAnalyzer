@@ -50,3 +50,8 @@ export interface AnalysisComparison {
   structure: { resolvedIssues: string[]; newIssues: string[] };
   actions: { resolved: string[]; added: string[] };
 }
+
+export interface PaginatedAnalyses {
+  data: Analysis[];
+  meta: { page: number; limit: number; total: number; totalPages: number };
+}

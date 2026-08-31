@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { prisma } from '../lib/prisma.js';
-import { jobDescriptionSchema } from '../schemas/analysis.js';
+import { jobDescriptionSchema, paginationSchema } from '../schemas/analysis.js';
 import { analyzeWithPython, extractTextWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
@@ -39,8 +39,15 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
   } catch (error) { next(error); }
 }
 
-export async function listAnalyses(_req: Request, res: Response, next: NextFunction) {
-  try { res.json({ data: await prisma.analysis.findMany({ orderBy: { createdAt: 'desc' } }) }); }
+export async function listAnalyses(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { page, limit } = paginationSchema.parse(req.query);
+    const [items, total] = await Promise.all([
+      prisma.analysis.findMany({ orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+      prisma.analysis.count(),
+    ]);
+    res.json({ data: items, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } });
+  }
   catch (error) { next(error); }
 }
 
