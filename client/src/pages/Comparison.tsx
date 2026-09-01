@@ -31,9 +31,9 @@ export function Comparison() {
     <Link to={`/history/${id}`} className="inline-flex items-center gap-1 text-sm font-medium text-indigo-700"><ArrowLeft size={16} /> Back to analysis</Link>
     <h1 className="mt-4 text-3xl font-bold">Version comparison</h1>
     <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 sm:flex-row sm:justify-between">
-      <div><small className="text-slate-400">Previous</small><p className="font-semibold">{data.previous.fileName}</p><strong>{data.previous.score}%</strong></div>
+      <div><small className="text-slate-400">Previous</small><p className="font-semibold">{data.previous.jobTitle ?? data.previous.fileName}</p>{data.previous.company && <p className="text-sm text-slate-500">{data.previous.company}</p>}<strong>{data.previous.score}%</strong></div>
       <ArrowRight className="rotate-90 text-indigo-500 sm:rotate-0" />
-      <div className="text-right"><small className="text-slate-400">Current</small><p className="font-semibold">{data.current.fileName}</p><strong>{data.current.score}%</strong></div>
+      <div className="text-right"><small className="text-slate-400">Current</small><p className="font-semibold">{data.current.jobTitle ?? data.current.fileName}</p>{data.current.company && <p className="text-sm text-slate-500">{data.current.company}</p>}<strong>{data.current.score}%</strong></div>
     </div>
     <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <Delta label="Match score" value={data.deltas.score} /><Delta label="Evidence quality" value={data.deltas.evidenceQuality} />
@@ -51,4 +51,3 @@ export function Comparison() {
     <p className="mt-6 text-xs text-slate-400">Compare versions analyzed against equivalent job requirements for the most meaningful result.</p>
   </div>;
 }
-

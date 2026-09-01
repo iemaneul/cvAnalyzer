@@ -82,6 +82,11 @@ export function Result({ analysis }: { analysis: Analysis }) {
     } finally { setDownloading(false); }
   };
   return <div className="mt-10 space-y-7 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    {analysis.jobTitle && <div className="border-b border-slate-100 pb-5">
+      <h2 className="text-xl font-semibold text-slate-900">{analysis.jobTitle}</h2>
+      {analysis.company && <p className="mt-1 text-sm font-medium text-indigo-700">{analysis.company}</p>}
+      <p className="mt-1 text-xs text-slate-500">{analysis.fileName}</p>
+    </div>}
     <div className="flex items-center justify-between gap-3">
       <div className="flex flex-wrap gap-2">{analysis.isSaved === false && <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">Private analysis · not saved</span>}{analysis.extractionMethod === 'ocr' && <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Scanned PDF · OCR</span>}</div>
       {analysis.isSaved !== false &&

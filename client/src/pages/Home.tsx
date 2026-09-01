@@ -7,6 +7,8 @@ import { errorMessage } from '../services/api';
 export function Home() {
   const [file, setFile] = useState<File>();
   const [job, setJob] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [company, setCompany] = useState('');
   const [localError, setLocalError] = useState('');
   const [privateMode, setPrivateMode] = useState(false);
   const analysis = useAnalyzeResume();
@@ -22,7 +24,7 @@ export function Home() {
     setFile(next);
   };
   const removeFile = () => { setFile(undefined); extraction.reset(); analysis.reset(); };
-  const submit = () => { if (file) analysis.mutate({ file, jobDescription: job, saveAnalysis: !privateMode }); };
+  const submit = () => { if (file) analysis.mutate({ file, jobTitle, company, jobDescription: job, saveAnalysis: !privateMode }); };
   const error = localError || (extraction.error ? errorMessage(extraction.error) : '') || (analysis.error ? errorMessage(analysis.error) : '');
 
   return <>
@@ -32,6 +34,16 @@ export function Home() {
       <p className="mx-auto mt-4 max-w-2xl text-slate-600">Compare your resume with a job description and discover how well your profile matches the role.</p>
     </div>
     <div className="mt-10 grid gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2">
+      <div className="md:col-span-2 grid gap-4 sm:grid-cols-2">
+        <label className="font-semibold">Job title <span className="text-rose-500">*</span>
+          <input value={jobTitle} onChange={(event) => setJobTitle(event.target.value)} maxLength={120} placeholder="e.g. Full-Stack Developer"
+            className="mt-2 w-full rounded-xl border border-slate-300 p-3 font-normal outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+        </label>
+        <label className="font-semibold">Company <span className="font-normal text-slate-400">(optional)</span>
+          <input value={company} onChange={(event) => setCompany(event.target.value)} maxLength={120} placeholder="e.g. Acme Inc."
+            className="mt-2 w-full rounded-xl border border-slate-300 p-3 font-normal outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+        </label>
+      </div>
       <div>
         <label className="mb-2 block font-semibold">Upload your resume</label>
         {file ? <div className="flex min-h-56 items-center justify-between rounded-xl border border-indigo-200 bg-indigo-50 p-5">
@@ -60,7 +72,7 @@ export function Home() {
             className="flex items-center justify-center gap-2 rounded-xl border border-indigo-200 px-5 py-3 font-semibold text-indigo-700 hover:bg-indigo-50 disabled:opacity-40">
             {extraction.isPending ? <Loader2 className="animate-spin" size={18} /> : <Eye size={18} />} Preview extracted text
           </button>
-          <button disabled={!file || job.trim().length < 50 || analysis.isPending} onClick={submit}
+          <button disabled={!file || jobTitle.trim().length < 2 || job.trim().length < 50 || analysis.isPending} onClick={submit}
             className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40">
             {analysis.isPending ? <><Loader2 className="animate-spin" size={18} />Analyzing your resume...</> : 'Analyze Resume'}
           </button>

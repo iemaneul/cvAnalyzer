@@ -1,5 +1,5 @@
 export interface Analysis {
-  id: string; fileName: string; jobDescription: string; score: number;
+  id: string; fileName: string; jobTitle?: string | null; company?: string | null; jobDescription: string; score: number;
   extractionMethod?: 'native' | 'ocr';
   resumeSkills: string[]; jobSkills: string[]; matchedSkills: string[];
   missingSkills: string[]; suggestions: string[]; createdAt: string;
@@ -40,8 +40,8 @@ export interface Analysis {
 }
 
 export interface AnalysisComparison {
-  current: { id: string; fileName: string; createdAt: string; score: number };
-  previous: { id: string; fileName: string; createdAt: string; score: number };
+  current: { id: string; fileName: string; jobTitle: string | null; company: string | null; createdAt: string; score: number };
+  previous: { id: string; fileName: string; jobTitle: string | null; company: string | null; createdAt: string; score: number };
   deltas: {
     score: number; evidenceQuality: number | null; experienceAlignment: number | null;
     structure: number | null; qualifications: number | null; competencies: number | null;

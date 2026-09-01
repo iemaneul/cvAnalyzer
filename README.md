@@ -1,6 +1,6 @@
 # cvAnalyzer
 
-Full-stack application that compares a PDF resume with a job description, finds matched and missing skills, calculates a compatibility score, and keeps an analysis history.
+Full-stack application that compares a PDF resume with a job description, finds matched and missing skills, calculates a compatibility score, and keeps an analysis history organized by job title and company.
 
 The analyzer classifies job skills as required, standard, or nice-to-have. The compatibility score is weighted accordingly (3, 2, and 1), and the result includes short resume excerpts as evidence for detected skills. Explicitly negated requirements such as “Docker is not required” are ignored.
 
@@ -15,6 +15,8 @@ Each new analysis includes a prioritized action plan. High-priority actions cove
 Beyond technologies, the analyzer compares supported professional competencies such as technical leadership, mentoring, communication, problem solving, teamwork, software architecture, agile practices, stakeholder management, product discovery, and remote collaboration. Competency alignment and supporting excerpts are shown separately from the technical score.
 
 Resume structure analysis checks essential sections, professional links, approximate length, bullet usage, and measurable achievements. Structural findings remain separate from job matching and are added to the prioritized action plan when relevant.
+
+Each analysis records the job title and, optionally, the company. These details appear in history, analysis details, comparisons, and exported reports, while records created before this feature remain readable.
 
 History entries can be compared as resume versions. The comparison reports score deltas across matching, evidence, experience, structure, qualifications, and competencies, plus newly matched skills and resolved or newly introduced gaps. For reliable interpretation, compare versions analyzed against equivalent job requirements.
 
@@ -106,7 +108,7 @@ Open http://localhost:5173.
 
 ## API
 
-- `POST /api/analyze` — multipart fields `resume` (PDF, maximum 5 MB) and `jobDescription` (minimum 50 characters)
+- `POST /api/analyze` — multipart fields `resume` (PDF, maximum 5 MB), `jobTitle` (2–120 characters), optional `company` (maximum 120 characters), `jobDescription` (minimum 50 characters), and optional `saveAnalysis`
 - `GET /api/analyses` — newest analyses first
 - `GET /api/analyses/:id` — complete result
 - `DELETE /api/analyses/:id` — remove a result

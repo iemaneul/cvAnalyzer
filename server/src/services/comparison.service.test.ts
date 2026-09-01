@@ -3,6 +3,7 @@ import { compareAnalyses, type ComparableAnalysis } from './comparison.service.j
 
 const analysis = (overrides: Partial<ComparableAnalysis>): ComparableAnalysis => ({
   id: 'id', fileName: 'resume.pdf', createdAt: new Date('2026-08-29T10:00:00Z'), score: 70,
+  jobTitle: 'Full-Stack Developer', company: 'Example Inc.',
   matchedSkills: ['React'], missingSkills: ['AWS'], evidenceQuality: 60, experienceAlignment: null,
   structure: { score: 70, issues: [{ code: 'missing_projects' }] },
   qualifications: { alignment: 50 }, competencies: { alignment: 40 },
@@ -29,4 +30,3 @@ describe('compareAnalyses', () => {
     expect(result.deltas.evidenceQuality).toBeNull();
   });
 });
-

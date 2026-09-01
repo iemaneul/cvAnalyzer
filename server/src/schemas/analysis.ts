@@ -65,6 +65,13 @@ export const analysisResultSchema = z.object({
 });
 
 export const jobDescriptionSchema = z.string().trim().min(50, 'Job description must be at least 50 characters.');
+export const jobContextSchema = z.object({
+  jobTitle: z.string().trim().min(2, 'Job title must be at least 2 characters.').max(120, 'Job title is too long.'),
+  company: z.preprocess(
+    (value) => typeof value === 'string' && value.trim() === '' ? undefined : value,
+    z.string().trim().max(120, 'Company name is too long.').optional(),
+  ),
+});
 export const paginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),

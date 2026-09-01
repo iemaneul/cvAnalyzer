@@ -11,6 +11,8 @@ model Analysis {
   id             String   @id @default(cuid())
   fileName       String
   extractionMethod String?
+  jobTitle        String?
+  company         String?
   jobDescription String
   score          Int
   resumeSkills   Json

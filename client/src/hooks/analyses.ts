@@ -4,8 +4,8 @@ import type { Analysis, AnalysisComparison, PaginatedAnalyses } from '../types';
 
 export function useAnalyzeResume() {
   const client = useQueryClient();
-  return useMutation({ mutationFn: async ({ file, jobDescription, saveAnalysis = true }: { file: File; jobDescription: string; saveAnalysis?: boolean }) => {
-    const form = new FormData(); form.append('resume', file); form.append('jobDescription', jobDescription); form.append('saveAnalysis', String(saveAnalysis));
+  return useMutation({ mutationFn: async ({ file, jobTitle, company, jobDescription, saveAnalysis = true }: { file: File; jobTitle: string; company?: string; jobDescription: string; saveAnalysis?: boolean }) => {
+    const form = new FormData(); form.append('resume', file); form.append('jobTitle', jobTitle); form.append('company', company ?? ''); form.append('jobDescription', jobDescription); form.append('saveAnalysis', String(saveAnalysis));
     return (await api.post<{data: Analysis}>('/analyze', form)).data.data;
   }, onSuccess: (analysis) => { if (analysis.isSaved !== false) client.invalidateQueries({ queryKey: ['analyses'] }); } });
 }

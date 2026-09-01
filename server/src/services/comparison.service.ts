@@ -1,6 +1,8 @@
 export interface ComparableAnalysis {
   id: string;
   fileName: string;
+  jobTitle: string | null;
+  company: string | null;
   createdAt: Date;
   score: number;
   matchedSkills: unknown;
@@ -32,8 +34,8 @@ export function compareAnalyses(current: ComparableAnalysis, previous: Comparabl
   const issueCodes = (value: unknown) => records(object(value).issues).map((item) => item.code).filter((item): item is string => typeof item === 'string');
   const actionIds = (value: unknown) => records(value).map((item) => item.id).filter((item): item is string => typeof item === 'string');
   return {
-    current: { id: current.id, fileName: current.fileName, createdAt: current.createdAt, score: current.score },
-    previous: { id: previous.id, fileName: previous.fileName, createdAt: previous.createdAt, score: previous.score },
+    current: { id: current.id, fileName: current.fileName, jobTitle: current.jobTitle, company: current.company, createdAt: current.createdAt, score: current.score },
+    previous: { id: previous.id, fileName: previous.fileName, jobTitle: previous.jobTitle, company: previous.company, createdAt: previous.createdAt, score: previous.score },
     deltas: {
       score: current.score - previous.score,
       evidenceQuality: delta(current.evidenceQuality, previous.evidenceQuality),
@@ -58,4 +60,3 @@ export function compareAnalyses(current: ComparableAnalysis, previous: Comparabl
     },
   };
 }
-

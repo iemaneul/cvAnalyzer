@@ -17,8 +17,9 @@ export function HistoryDetail() {
   return <div>
     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
       <div>
-        <h1 className="text-3xl font-bold">{data.fileName}</h1>
-        <p className="mt-1 text-slate-500">{new Intl.DateTimeFormat('en', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(data.createdAt))}</p>
+        <h1 className="text-3xl font-bold">{data.jobTitle ?? data.fileName}</h1>
+        {data.company && <p className="mt-1 text-lg font-medium text-indigo-700">{data.company}</p>}
+        <p className="mt-1 text-slate-500">{data.fileName} · {new Intl.DateTimeFormat('en', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(data.createdAt))}</p>
       </div>
       <button disabled={remove.isPending} onClick={() => {
         if (id && confirm('Delete this analysis?')) remove.mutate(id, { onSuccess: () => navigate('/history') });
@@ -31,7 +32,7 @@ export function HistoryDetail() {
         <select value={previousId} onChange={(event) => setPreviousId(event.target.value)} className="mt-2 w-full rounded-lg border border-indigo-200 bg-white p-2 text-slate-800">
           <option value="">Select an analysis...</option>
           {previousOptions.map((item) => <option key={item.id} value={item.id}>
-            {item.fileName} — {item.score}% — {new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(item.createdAt))}
+            {item.jobTitle ?? item.fileName}{item.company ? ` at ${item.company}` : ''} — {item.score}% — {new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(item.createdAt))}
           </option>)}
         </select>
       </label>

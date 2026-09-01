@@ -13,9 +13,11 @@ export function History() {
       {isLoading ? <p className="p-6">Loading...</p> : error ? <p className="p-6 text-rose-600">Unable to load analyses.</p>
         : !data?.data.length ? <p className="p-10 text-center text-slate-500">No analyses yet.</p>
           : <table className="w-full text-left">
-            <thead className="bg-slate-50 text-sm text-slate-500"><tr><th className="p-4">Resume</th><th className="p-4">Score</th><th className="p-4">Date</th></tr></thead>
+            <thead className="bg-slate-50 text-sm text-slate-500"><tr><th className="p-4">Position</th><th className="p-4">Company</th><th className="p-4">Resume</th><th className="p-4">Score</th><th className="p-4">Date</th></tr></thead>
             <tbody>{data.data.map((item) => <tr key={item.id} className="border-t hover:bg-slate-50">
-              <td className="p-4"><Link className="font-medium text-indigo-700" to={`/history/${item.id}`}>{item.fileName}</Link></td>
+              <td className="p-4"><Link className="font-medium text-indigo-700" to={`/history/${item.id}`}>{item.jobTitle ?? 'Previous analysis'}</Link></td>
+              <td className="p-4 text-slate-600">{item.company ?? '—'}</td>
+              <td className="p-4 text-slate-600">{item.fileName}</td>
               <td className="p-4 font-semibold">{item.score}%</td>
               <td className="p-4 text-slate-500">{new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(item.createdAt))}</td>
             </tr>)}</tbody>

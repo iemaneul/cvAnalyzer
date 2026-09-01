@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { prisma } from '../lib/prisma.js';
-import { jobDescriptionSchema, paginationSchema } from '../schemas/analysis.js';
+import { jobContextSchema, jobDescriptionSchema, paginationSchema } from '../schemas/analysis.js';
 import { analyzeWithPython, extractTextWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
@@ -12,17 +12,18 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
   try {
     if (!req.file) throw new AppError(400, 'A PDF resume is required.');
     const jobDescription = jobDescriptionSchema.parse(req.body.jobDescription);
+    const { jobTitle, company } = jobContextSchema.parse(req.body);
     const result = await analyzeWithPython(req.file, jobDescription);
     const fileName = path.basename(req.file.originalname).replace(/[^a-zA-Z0-9._-]/g, '_');
     if (!shouldSaveAnalysis(req.body.saveAnalysis)) {
       res.status(200).json({ data: {
-        id: `private-${randomUUID()}`, fileName, jobDescription, ...result,
+        id: `private-${randomUUID()}`, fileName, jobTitle, company: company ?? null, jobDescription, ...result,
         createdAt: new Date().toISOString(), isSaved: false,
       }});
       return;
     }
     const analysis = await prisma.analysis.create({ data: {
-      fileName, jobDescription, extractionMethod: result.extractionMethod,
+      fileName, jobTitle, company, jobDescription, extractionMethod: result.extractionMethod,
       score: result.score, resumeSkills: result.resumeSkills, jobSkills: result.jobSkills,
       matchedSkills: result.matchedSkills, missingSkills: result.missingSkills, suggestions: result.suggestions,
       skillRequirements: result.skillRequirements, evidence: result.evidence,
