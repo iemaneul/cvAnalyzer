@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
-import type { Analysis, AnalysisComparison, PaginatedAnalyses } from '../types';
+import type { Analysis, AnalysisComparison, AnalysisDashboard, PaginatedAnalyses } from '../types';
 
 export function useAnalyzeResume() {
   const client = useQueryClient();
@@ -19,6 +19,7 @@ export function useAnalyses(page = 1, limit = 10, filters: AnalysisFilters = {})
   queryFn: async () => (await api.get<PaginatedAnalyses>('/analyses', { params: { page, limit, ...filters } })).data,
 }); }
 export function useAnalysis(id?: string) { return useQuery({ queryKey: ['analyses', id], enabled: !!id, queryFn: async () => (await api.get<{data: Analysis}>(`/analyses/${id}`)).data.data }); }
+export function useAnalysisDashboard() { return useQuery({ queryKey: ['analyses', 'dashboard'], queryFn: async () => (await api.get<{data: AnalysisDashboard}>('/analyses/dashboard')).data.data }); }
 export function useAnalysisComparison(id?: string, previousId?: string) { return useQuery({
   queryKey: ['analyses', id, 'compare', previousId], enabled: !!id && !!previousId,
   queryFn: async () => (await api.get<{data: AnalysisComparison}>(`/analyses/${id}/compare/${previousId}`)).data.data,

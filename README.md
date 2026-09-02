@@ -20,6 +20,8 @@ Each analysis records the job title and, optionally, the company. These details 
 
 The history supports server-side search by job title or company, score ranges, and date intervals. Filters are applied before pagination so result totals and page counts remain accurate.
 
+The progress dashboard summarizes total and average analyses, best match, overall score change, the latest score trend, and the most frequently analyzed positions and companies.
+
 History entries can be compared as resume versions. The comparison reports score deltas across matching, evidence, experience, structure, qualifications, and competencies, plus newly matched skills and resolved or newly introduced gaps. For reliable interpretation, compare versions analyzed against equivalent job requirements.
 
 Saved analyses can be exported as a paginated PDF report containing the principal scores, skill gaps, prioritized action plan, suggestions, and a clear interpretation disclaimer.
@@ -112,6 +114,7 @@ Open http://localhost:5173.
 
 - `POST /api/analyze` — multipart fields `resume` (PDF, maximum 5 MB), `jobTitle` (2–120 characters), optional `company` (maximum 120 characters), `jobDescription` (minimum 50 characters), and optional `saveAnalysis`
 - `GET /api/analyses` — newest analyses first; accepts `page`, `limit`, `search`, `minScore`, `maxScore`, `dateFrom`, and `dateTo`
+- `GET /api/analyses/dashboard` — progress metrics, recent score trend, and position/company rankings
 - `GET /api/analyses/:id` — complete result
 - `DELETE /api/analyses/:id` — remove a result
 

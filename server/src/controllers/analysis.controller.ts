@@ -7,6 +7,7 @@ import { analysisListQuerySchema, jobContextSchema, jobDescriptionSchema } from 
 import { analyzeWithPython, extractTextWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
+import { buildDashboard } from '../services/dashboard.service.js';
 import { shouldSaveAnalysis } from '../utils/privacy.js';
 
 export async function createAnalysis(req: Request, res: Response, next: NextFunction) {
@@ -64,6 +65,15 @@ export async function listAnalyses(req: Request, res: Response, next: NextFuncti
     res.json({ data: items, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   }
   catch (error) { next(error); }
+}
+
+export async function getAnalysisDashboard(_req: Request, res: Response, next: NextFunction) {
+  try {
+    const analyses = await prisma.analysis.findMany({
+      select: { id: true, jobTitle: true, company: true, score: true, createdAt: true },
+    });
+    res.json({ data: buildDashboard(analyses) });
+  } catch (error) { next(error); }
 }
 
 export async function getAnalysis(req: Request, res: Response, next: NextFunction) {

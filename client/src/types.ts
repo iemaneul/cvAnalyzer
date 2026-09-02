@@ -55,3 +55,11 @@ export interface PaginatedAnalyses {
   data: Analysis[];
   meta: { page: number; limit: number; total: number; totalPages: number };
 }
+
+export interface AnalysisDashboard {
+  summary: { total: number; averageScore: number; bestScore: number; improvement: number };
+  bestAnalysis: { id: string; jobTitle: string | null; company: string | null; score: number; createdAt: string } | null;
+  trend: Array<{ id: string; jobTitle: string | null; company: string | null; score: number; createdAt: string }>;
+  topJobTitles: Array<{ name: string; count: number }>;
+  topCompanies: Array<{ name: string; count: number }>;
+}
