@@ -1,8 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
+import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
-import { jobContextSchema, jobDescriptionSchema, paginationSchema } from '../schemas/analysis.js';
+import { analysisListQuerySchema, jobContextSchema, jobDescriptionSchema } from '../schemas/analysis.js';
 import { analyzeWithPython, extractTextWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
@@ -42,10 +43,23 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
 
 export async function listAnalyses(req: Request, res: Response, next: NextFunction) {
   try {
-    const { page, limit } = paginationSchema.parse(req.query);
+    const { page, limit, search, minScore, maxScore, dateFrom, dateTo } = analysisListQuerySchema.parse(req.query);
+    const dateToExclusive = dateTo ? new Date(`${dateTo}T00:00:00.000Z`) : undefined;
+    dateToExclusive?.setUTCDate(dateToExclusive.getUTCDate() + 1);
+    const where: Prisma.AnalysisWhereInput = {
+      ...(search && { OR: [
+        { jobTitle: { contains: search, mode: 'insensitive' } },
+        { company: { contains: search, mode: 'insensitive' } },
+      ] }),
+      ...((minScore !== undefined || maxScore !== undefined) && { score: { gte: minScore, lte: maxScore } }),
+      ...((dateFrom || dateTo) && { createdAt: {
+        ...(dateFrom && { gte: new Date(`${dateFrom}T00:00:00.000Z`) }),
+        ...(dateToExclusive && { lt: dateToExclusive }),
+      } }),
+    };
     const [items, total] = await Promise.all([
-      prisma.analysis.findMany({ orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
-      prisma.analysis.count(),
+      prisma.analysis.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+      prisma.analysis.count({ where }),
     ]);
     res.json({ data: items, meta: { page, limit, total, totalPages: Math.ceil(total / limit) } });
   }

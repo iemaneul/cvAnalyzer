@@ -13,9 +13,10 @@ export function useExtractResumeText() { return useMutation({ mutationFn: async 
   const form = new FormData(); form.append('resume', file);
   return (await api.post<{data: {text: string; characters: number; method: 'native' | 'ocr'; pages: number}}>('/extract', form)).data.data;
 } }); }
-export function useAnalyses(page = 1, limit = 10) { return useQuery({
-  queryKey: ['analyses', { page, limit }],
-  queryFn: async () => (await api.get<PaginatedAnalyses>('/analyses', { params: { page, limit } })).data,
+export type AnalysisFilters = { search?: string; minScore?: number; maxScore?: number; dateFrom?: string; dateTo?: string };
+export function useAnalyses(page = 1, limit = 10, filters: AnalysisFilters = {}) { return useQuery({
+  queryKey: ['analyses', { page, limit, ...filters }],
+  queryFn: async () => (await api.get<PaginatedAnalyses>('/analyses', { params: { page, limit, ...filters } })).data,
 }); }
 export function useAnalysis(id?: string) { return useQuery({ queryKey: ['analyses', id], enabled: !!id, queryFn: async () => (await api.get<{data: Analysis}>(`/analyses/${id}`)).data.data }); }
 export function useAnalysisComparison(id?: string, previousId?: string) { return useQuery({

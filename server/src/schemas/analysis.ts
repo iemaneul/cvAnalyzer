@@ -72,8 +72,24 @@ export const jobContextSchema = z.object({
     z.string().trim().max(120, 'Company name is too long.').optional(),
   ),
 });
-export const paginationSchema = z.object({
+const optionalQueryText = (max: number) => z.preprocess(
+  (value) => typeof value === 'string' && value.trim() === '' ? undefined : value,
+  z.string().trim().max(max).optional(),
+);
+const isIsoDate = (value?: string) => !value || (!Number.isNaN(Date.parse(`${value}T00:00:00.000Z`))
+  && new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) === value);
+
+export const analysisListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
+  search: optionalQueryText(120),
+  minScore: z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().int().min(0).max(100).optional()),
+  maxScore: z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().int().min(0).max(100).optional()),
+  dateFrom: optionalQueryText(10).refine(isIsoDate, 'Invalid start date.'),
+  dateTo: optionalQueryText(10).refine(isIsoDate, 'Invalid end date.'),
+}).refine(({ minScore, maxScore }) => minScore === undefined || maxScore === undefined || minScore <= maxScore, {
+  message: 'Minimum score cannot exceed maximum score.', path: ['minScore'],
+}).refine(({ dateFrom, dateTo }) => !dateFrom || !dateTo || dateFrom <= dateTo, {
+  message: 'Start date cannot be after end date.', path: ['dateFrom'],
 });
 export type AnalysisResult = z.infer<typeof analysisResultSchema>;
