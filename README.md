@@ -17,6 +17,7 @@ Beyond technologies, the analyzer compares supported professional competencies s
 Resume structure analysis checks essential sections, professional links, approximate length, bullet usage, and measurable achievements. Structural findings remain separate from job matching and are added to the prioritized action plan when relevant.
 
 Each analysis records the job title and, optionally, the company. These details appear in history, analysis details, comparisons, and exported reports, while records created before this feature remain readable.
+Saved job titles and companies can be corrected from the analysis details without rerunning resume processing.
 
 The history supports server-side search by job title or company, score ranges, and date intervals. Filters are applied before pagination so result totals and page counts remain accurate.
 
@@ -116,6 +117,7 @@ Open http://localhost:5173.
 - `GET /api/analyses` — newest analyses first; accepts `page`, `limit`, `search`, `minScore`, `maxScore`, `dateFrom`, and `dateTo`
 - `GET /api/analyses/dashboard` — progress metrics, recent score trend, and position/company rankings
 - `GET /api/analyses/:id` — complete result
+- `PATCH /api/analyses/:id/context` — update the saved job title and optional company
 - `DELETE /api/analyses/:id` — remove a result
 
 Success responses use `{ "data": ... }`; errors use `{ "error": { "message": "..." } }`.

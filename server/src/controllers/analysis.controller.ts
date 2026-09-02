@@ -85,6 +85,17 @@ export async function getAnalysis(req: Request, res: Response, next: NextFunctio
   } catch (error) { next(error); }
 }
 
+export async function updateAnalysisContext(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const { jobTitle, company } = jobContextSchema.parse(req.body);
+    const found = await prisma.analysis.findUnique({ where: { id }, select: { id: true } });
+    if (!found) throw new AppError(404, 'Analysis not found.');
+    const analysis = await prisma.analysis.update({ where: { id }, data: { jobTitle, company: company ?? null } });
+    res.json({ data: analysis });
+  } catch (error) { next(error); }
+}
+
 export async function compareAnalysisVersions(req: Request, res: Response, next: NextFunction) {
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;

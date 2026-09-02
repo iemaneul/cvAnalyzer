@@ -19,6 +19,10 @@ export function useAnalyses(page = 1, limit = 10, filters: AnalysisFilters = {})
   queryFn: async () => (await api.get<PaginatedAnalyses>('/analyses', { params: { page, limit, ...filters } })).data,
 }); }
 export function useAnalysis(id?: string) { return useQuery({ queryKey: ['analyses', id], enabled: !!id, queryFn: async () => (await api.get<{data: Analysis}>(`/analyses/${id}`)).data.data }); }
+export function useUpdateAnalysisContext() { const client = useQueryClient(); return useMutation({
+  mutationFn: async ({ id, jobTitle, company }: { id: string; jobTitle: string; company?: string }) => (await api.patch<{data: Analysis}>(`/analyses/${id}/context`, { jobTitle, company })).data.data,
+  onSuccess: (analysis) => { client.setQueryData(['analyses', analysis.id], analysis); client.invalidateQueries({ queryKey: ['analyses'] }); },
+}); }
 export function useAnalysisDashboard() { return useQuery({ queryKey: ['analyses', 'dashboard'], queryFn: async () => (await api.get<{data: AnalysisDashboard}>('/analyses/dashboard')).data.data }); }
 export function useAnalysisComparison(id?: string, previousId?: string) { return useQuery({
   queryKey: ['analyses', id, 'compare', previousId], enabled: !!id && !!previousId,

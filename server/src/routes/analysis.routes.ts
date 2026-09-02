@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { compareAnalysisVersions, createAnalysis, deleteAnalysis, downloadAnalysisReport, getAnalysis, getAnalysisDashboard, listAnalyses, previewResumeText } from '../controllers/analysis.controller.js';
+import { compareAnalysisVersions, createAnalysis, deleteAnalysis, downloadAnalysisReport, getAnalysis, getAnalysisDashboard, listAnalyses, previewResumeText, updateAnalysisContext } from '../controllers/analysis.controller.js';
 import { upload } from '../middlewares/upload.js';
 
 export const analysisRouter = Router();
@@ -11,4 +11,5 @@ analysisRouter.get('/analyses/dashboard', getAnalysisDashboard);
 analysisRouter.get('/analyses/:id/compare/:previousId', compareAnalysisVersions);
 analysisRouter.get('/analyses/:id/report', downloadAnalysisReport);
 analysisRouter.get('/analyses/:id', getAnalysis);
+analysisRouter.patch('/analyses/:id/context', updateAnalysisContext);
 analysisRouter.delete('/analyses/:id', deleteAnalysis);
