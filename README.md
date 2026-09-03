@@ -27,6 +27,8 @@ The history supports server-side search by job title or company, score ranges, a
 
 The progress dashboard summarizes total and average analyses, best match, overall score change, the latest score trend, and the most frequently analyzed positions and companies.
 
+Responsive navigation, mobile history cards, stacked comparison content, and touch-friendly result actions keep the main workflows usable on small screens.
+
 History entries can be compared as resume versions. The comparison reports score deltas across matching, evidence, experience, structure, qualifications, and competencies, plus newly matched skills and resolved or newly introduced gaps. For reliable interpretation, compare versions analyzed against equivalent job requirements.
 
 Saved analyses can be exported as a paginated PDF report containing the principal scores, skill gaps, prioritized action plan, suggestions, and a clear interpretation disclaimer.

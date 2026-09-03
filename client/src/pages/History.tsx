@@ -46,7 +46,11 @@ export function History() {
     <div className="mt-5 overflow-x-auto rounded-xl border bg-white">
       {isLoading ? <p className="p-6">Loading...</p> : error ? <p className="p-6 text-rose-600">Unable to load analyses.</p>
         : !data?.data.length ? <p className="p-10 text-center text-slate-500">{hasFilters ? 'No analyses match these filters.' : 'No analyses yet.'}</p>
-          : <table className="w-full min-w-[900px] text-left">
+          : <><div className="divide-y md:hidden">{data.data.map((item) => <article key={item.id} className="p-4">
+            <div className="flex items-start justify-between gap-3"><div className="min-w-0"><Link className="font-semibold text-indigo-700" to={`/history/${item.id}`}>{item.jobTitle ?? 'Previous analysis'}</Link><p className="mt-1 truncate text-sm text-slate-500">{item.company ?? 'Company not specified'}</p></div><strong className="shrink-0 text-lg">{item.score}%</strong></div>
+            <div className="mt-3 flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${applicationStatusStyle[item.applicationStatus ?? 'planned']}`}>{applicationStatuses.find((status) => status.value === (item.applicationStatus ?? 'planned'))?.label}</span><span className="text-xs text-slate-400">{new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(item.createdAt))}</span></div>
+            <p className="mt-3 truncate text-xs text-slate-400">{item.fileName}</p>
+          </article>)}</div><table className="hidden w-full min-w-[900px] text-left md:table">
             <thead className="bg-slate-50 text-sm text-slate-500"><tr><th className="p-4">Position</th><th className="p-4">Company</th><th className="p-4">Stage</th><th className="p-4">Resume</th><th className="p-4">Score</th><th className="p-4">Date</th></tr></thead>
             <tbody>{data.data.map((item) => <tr key={item.id} className="border-t hover:bg-slate-50">
               <td className="p-4"><Link className="font-medium text-indigo-700" to={`/history/${item.id}`}>{item.jobTitle ?? 'Previous analysis'}</Link></td>
@@ -56,7 +60,7 @@ export function History() {
               <td className="p-4 font-semibold">{item.score}%</td>
               <td className="p-4 text-slate-500">{new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date(item.createdAt))}</td>
             </tr>)}</tbody>
-          </table>}
+          </table></>}
     </div>
     {data && data.meta.totalPages > 1 && <div className="mt-4 flex items-center justify-between">
       <p className="text-sm text-slate-500">Page {data.meta.page} of {data.meta.totalPages} · {data.meta.total} analyses</p>

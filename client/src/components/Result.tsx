@@ -87,10 +87,10 @@ export function Result({ analysis }: { analysis: Analysis }) {
       {analysis.company && <p className="mt-1 text-sm font-medium text-indigo-700">{analysis.company}</p>}
       <p className="mt-1 text-xs text-slate-500">{analysis.fileName}</p>
     </div>}
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center">
       <div className="flex flex-wrap gap-2">{analysis.isSaved === false && <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">Private analysis · not saved</span>}{analysis.extractionMethod === 'ocr' && <span className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Scanned PDF · OCR</span>}</div>
       {analysis.isSaved !== false &&
-      <button onClick={downloadReport} disabled={downloading} className="flex items-center gap-2 rounded-lg border border-indigo-200 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 disabled:opacity-50">
+      <button onClick={downloadReport} disabled={downloading} className="flex items-center justify-center gap-2 rounded-lg border border-indigo-200 px-3 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 disabled:opacity-50">
         {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />} Download PDF report
       </button>}
     </div>
@@ -127,7 +127,7 @@ export function Result({ analysis }: { analysis: Analysis }) {
     </section>}
 
     {analysis.structure && <section>
-      <div className="mb-3 flex items-end justify-between gap-3">
+    <div className="mb-3 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
         <div>
           <h3 className="font-semibold">Resume structure</h3>
           <p className="mt-1 text-sm text-slate-500">Section coverage, contact links, length, and measurable outcomes.</p>
@@ -167,7 +167,7 @@ export function Result({ analysis }: { analysis: Analysis }) {
     </section> : null}
 
     {analysis.experienceComparisons?.length ? <section>
-      <div className="mb-3 flex items-end justify-between gap-3">
+      <div className="mb-3 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
         <div>
           <h3 className="font-semibold">Experience alignment</h3>
           <p className="mt-1 text-sm text-slate-500">Only explicitly stated durations are compared.</p>
@@ -178,7 +178,7 @@ export function Result({ analysis }: { analysis: Analysis }) {
         </strong>
       </div>
       <div className="overflow-hidden rounded-xl border border-slate-200">
-        {analysis.experienceComparisons.map((item) => <div key={item.skill} className="flex items-center justify-between border-b border-slate-100 p-3 last:border-0">
+        {analysis.experienceComparisons.map((item) => <div key={item.skill} className="flex flex-col gap-1 border-b border-slate-100 p-3 last:border-0 sm:flex-row sm:items-center sm:justify-between">
           <span className="font-medium">{item.skill}</span>
           <span className={`text-sm ${item.status === 'met' ? 'text-emerald-700' : item.status === 'gap' ? 'text-rose-700' : 'text-amber-700'}`}>
             {item.resumeYears === null ? 'Duration not stated' : `${item.resumeYears} years documented`}
@@ -196,7 +196,7 @@ export function Result({ analysis }: { analysis: Analysis }) {
     </div>
 
     {analysis.competencies && <section>
-      <div className="mb-3 flex items-end justify-between gap-3">
+      <div className="mb-3 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
         <div>
           <h3 className="font-semibold">Professional competencies</h3>
           <p className="mt-1 text-sm text-slate-500">Leadership, collaboration, engineering, product, and process capabilities.</p>
@@ -241,7 +241,7 @@ export function Result({ analysis }: { analysis: Analysis }) {
     </section> : null}
 
     {analysis.qualifications && <section>
-      <div className="mb-3 flex items-end justify-between gap-3">
+      <div className="mb-3 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
         <div>
           <h3 className="font-semibold">Qualifications</h3>
           <p className="mt-1 text-sm text-slate-500">Education, language proficiency, and certifications detected explicitly.</p>

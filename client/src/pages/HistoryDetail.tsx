@@ -71,8 +71,8 @@ export function HistoryDetail() {
     </div>
     <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
       <span className={`rounded-full px-3 py-1 text-sm font-semibold ${applicationStatusStyle[data.applicationStatus ?? 'planned']}`}>{applicationStatuses.find((status) => status.value === (data.applicationStatus ?? 'planned'))?.label}</span>
-      <label className="text-sm font-medium text-slate-600">Move application to
-        <select disabled={updateStatus.isPending} value={data.applicationStatus ?? 'planned'} onChange={(event) => id && updateStatus.mutate({ id, status: event.target.value as NonNullable<typeof data.applicationStatus> })} className="ml-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800 outline-none focus:border-indigo-500">
+      <label className="flex w-full flex-col gap-2 text-sm font-medium text-slate-600 sm:w-auto sm:flex-row sm:items-center">Move application to
+        <select disabled={updateStatus.isPending} value={data.applicationStatus ?? 'planned'} onChange={(event) => id && updateStatus.mutate({ id, status: event.target.value as NonNullable<typeof data.applicationStatus> })} className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800 outline-none focus:border-indigo-500">
           {applicationStatuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
         </select>
       </label>
