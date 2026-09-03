@@ -46,7 +46,9 @@ Image-only PDFs use an OCR fallback powered by Tesseract in the Python container
 - API responses include x-request-id; completed requests are logged as structured JSON.
 - Analysis history is paginated with page and limit query parameters.
 - Docker Compose waits for healthy dependencies before starting consumers.
-- GitHub Actions validates Python, Node, and React independently and runs a full Node-to-Python-to-PostgreSQL analysis on every push to main and every pull request.
+- GitHub Actions validates Python, Node, React, and browser flows independently and runs a full Node-to-Python-to-PostgreSQL analysis on every push to main and every pull request.
+
+Playwright covers authentication, resume submission, responsive history filters, editing, deletion, and comparison flows in Chromium with deterministic API fixtures.
 
 ## Architecture
 

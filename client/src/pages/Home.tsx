@@ -57,8 +57,8 @@ export function Home() {
         </label>}
       </div>
       <div>
-        <div className="mb-2 flex justify-between"><label className="font-semibold">Job description</label><span className="text-xs text-slate-400">{job.length} characters</span></div>
-        <textarea value={job} onChange={(event) => setJob(event.target.value)} placeholder="Paste the job description here..."
+        <div className="mb-2 flex justify-between"><label htmlFor="job-description" className="font-semibold">Job description</label><span className="text-xs text-slate-400">{job.length} characters</span></div>
+        <textarea id="job-description" value={job} onChange={(event) => setJob(event.target.value)} placeholder="Paste the job description here..."
           className="min-h-56 w-full resize-none rounded-xl border border-slate-300 p-4 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
       </div>
       <div className="md:col-span-2">
