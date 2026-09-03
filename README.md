@@ -2,6 +2,8 @@
 
 Full-stack application that compares a PDF resume with a job description, finds matched and missing skills, calculates a compatibility score, and keeps an analysis history organized by job title and company.
 
+Users create an account and sign in before analyzing resumes. Passwords are hashed, sessions use expiring signed tokens, and all saved analyses, reports, comparisons, and dashboard metrics are scoped to their owner.
+
 The analyzer classifies job skills as required, standard, or nice-to-have. The compatibility score is weighted accordingly (3, 2, and 1), and the result includes short resume excerpts as evidence for detected skills. Explicitly negated requirements such as “Docker is not required” are ignored.
 
 Evidence is also classified by resume section. Mentions in professional experience and projects are stronger than isolated mentions in a skills or courses list. When a nearby phrase states years of experience, that context is displayed with the evidence. Evidence quality remains separate from requirement coverage so the primary score stays understandable.
@@ -115,6 +117,9 @@ Open http://localhost:5173.
 
 ## API
 
+- `POST /api/auth/register` — create an account with name, email, and password
+- `POST /api/auth/login` — authenticate and receive an access token
+- `GET /api/auth/me` — return the authenticated user
 - `POST /api/analyze` — multipart fields `resume` (PDF, maximum 5 MB), `jobTitle` (2–120 characters), optional `company` (maximum 120 characters), `jobDescription` (minimum 50 characters), and optional `saveAnalysis`
 - `GET /api/analyses` — newest analyses first; accepts `page`, `limit`, `search`, `minScore`, `maxScore`, `dateFrom`, and `dateTo`
 - `GET /api/analyses/dashboard` — progress metrics, recent score trend, and position/company rankings
@@ -125,6 +130,7 @@ Open http://localhost:5173.
 - `DELETE /api/analyses/:id` — remove a result
 
 Success responses use `{ "data": ... }`; errors use `{ "error": { "message": "..." } }`.
+Protected endpoints require `Authorization: Bearer <token>`. Set a long, random `JWT_SECRET` outside local development.
 
 ## Tests and builds
 

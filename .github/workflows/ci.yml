@@ -80,6 +80,7 @@ jobs:
       PYTHON_SERVICE_URL: http://localhost:8000
       CLIENT_URL: http://localhost:5173
       PORT: 3001
+      JWT_SECRET: integration-test-secret
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
@@ -122,11 +123,14 @@ jobs:
           canvas.drawString(72, 735, "Built production applications with React, TypeScript, Python and Docker.")
           canvas.save()
           job = "Required: React, TypeScript and Python. Nice to have: Docker and AWS for cloud deployments."
+          registration = httpx.post("http://localhost:3001/api/auth/register", json={"name": "CI User", "email": "ci@example.com", "password": "integration-password"})
+          registration.raise_for_status()
+          headers = {"Authorization": f"Bearer {registration.json()['data']['token']}"}
           with path.open("rb") as resume:
-              response = httpx.post("http://localhost:3001/api/analyze", files={"resume": ("resume.pdf", resume, "application/pdf")}, data={"jobTitle": "Full-Stack Developer", "company": "Example Inc.", "jobDescription": job})
+              response = httpx.post("http://localhost:3001/api/analyze", headers=headers, files={"resume": ("resume.pdf", resume, "application/pdf")}, data={"jobTitle": "Full-Stack Developer", "company": "Example Inc.", "jobDescription": job})
           response.raise_for_status()
           assert response.json()["data"]["score"] > 0
-          history = httpx.get("http://localhost:3001/api/analyses?page=1&limit=10")
+          history = httpx.get("http://localhost:3001/api/analyses?page=1&limit=10", headers=headers)
           history.raise_for_status()
           assert history.json()["meta"]["total"] == 1
           PY

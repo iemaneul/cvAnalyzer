@@ -27,6 +27,7 @@ services:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/resume_analyzer
       PYTHON_SERVICE_URL: http://python-service:8000
       CLIENT_URL: http://localhost:5173
+      JWT_SECRET: local-development-secret-change-before-deploying
     ports: ["3001:3001"]
     depends_on:
       postgres: { condition: service_healthy }

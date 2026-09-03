@@ -5,6 +5,8 @@ import { errorHandler } from './middlewares/error.js';
 import { analysisRouter } from './routes/analysis.routes.js';
 import { requestLogger } from './middlewares/requestLogger.js';
 import { checkReadiness } from './services/readiness.service.js';
+import { authRouter } from './routes/auth.routes.js';
+import { authenticate } from './middlewares/auth.js';
 
 export const app = express();
 app.use(helmet());
@@ -16,5 +18,6 @@ app.get('/health/ready', async (_req, res) => {
   const readiness = await checkReadiness();
   res.status(readiness.ready ? 200 : 503).json({ data: { status: readiness.ready ? 'ready' : 'not_ready', ...readiness } });
 });
-app.use('/api', analysisRouter);
+app.use('/api/auth', authRouter);
+app.use('/api', authenticate, analysisRouter);
 app.use(errorHandler);

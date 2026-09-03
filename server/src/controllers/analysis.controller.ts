@@ -25,7 +25,7 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
       return;
     }
     const analysis = await prisma.analysis.create({ data: {
-      fileName, jobTitle, company, jobDescription, extractionMethod: result.extractionMethod,
+      fileName, jobTitle, company, userId: req.user!.id, jobDescription, extractionMethod: result.extractionMethod,
       score: result.score, resumeSkills: result.resumeSkills, jobSkills: result.jobSkills,
       matchedSkills: result.matchedSkills, missingSkills: result.missingSkills, suggestions: result.suggestions,
       skillRequirements: result.skillRequirements, evidence: result.evidence,
@@ -48,6 +48,7 @@ export async function listAnalyses(req: Request, res: Response, next: NextFuncti
     const dateToExclusive = dateTo ? new Date(`${dateTo}T00:00:00.000Z`) : undefined;
     dateToExclusive?.setUTCDate(dateToExclusive.getUTCDate() + 1);
     const where: Prisma.AnalysisWhereInput = {
+      userId: req.user!.id,
       ...(search && { OR: [
         { jobTitle: { contains: search, mode: 'insensitive' } },
         { company: { contains: search, mode: 'insensitive' } },
@@ -68,9 +69,10 @@ export async function listAnalyses(req: Request, res: Response, next: NextFuncti
   catch (error) { next(error); }
 }
 
-export async function getAnalysisDashboard(_req: Request, res: Response, next: NextFunction) {
+export async function getAnalysisDashboard(req: Request, res: Response, next: NextFunction) {
   try {
     const analyses = await prisma.analysis.findMany({
+      where: { userId: req.user!.id },
       select: { id: true, jobTitle: true, company: true, score: true, createdAt: true },
     });
     res.json({ data: buildDashboard(analyses) });
@@ -80,7 +82,7 @@ export async function getAnalysisDashboard(_req: Request, res: Response, next: N
 export async function getAnalysis(req: Request, res: Response, next: NextFunction) {
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-    const analysis = await prisma.analysis.findUnique({ where: { id } });
+    const analysis = await prisma.analysis.findFirst({ where: { id, userId: req.user!.id } });
     if (!analysis) throw new AppError(404, 'Analysis not found.');
     res.json({ data: analysis });
   } catch (error) { next(error); }
@@ -90,7 +92,7 @@ export async function updateAnalysisContext(req: Request, res: Response, next: N
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const { jobTitle, company } = jobContextSchema.parse(req.body);
-    const found = await prisma.analysis.findUnique({ where: { id }, select: { id: true } });
+    const found = await prisma.analysis.findFirst({ where: { id, userId: req.user!.id }, select: { id: true } });
     if (!found) throw new AppError(404, 'Analysis not found.');
     const analysis = await prisma.analysis.update({ where: { id }, data: { jobTitle, company: company ?? null } });
     res.json({ data: analysis });
@@ -101,7 +103,7 @@ export async function updateApplicationStatus(req: Request, res: Response, next:
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const { status } = applicationStatusSchema.parse(req.body);
-    const found = await prisma.analysis.findUnique({ where: { id }, select: { id: true } });
+    const found = await prisma.analysis.findFirst({ where: { id, userId: req.user!.id }, select: { id: true } });
     if (!found) throw new AppError(404, 'Analysis not found.');
     const analysis = await prisma.analysis.update({ where: { id }, data: { applicationStatus: status } });
     res.json({ data: analysis });
@@ -112,7 +114,7 @@ export async function updateApplicationDetails(req: Request, res: Response, next
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const details = applicationDetailsSchema.parse(req.body);
-    const found = await prisma.analysis.findUnique({ where: { id }, select: { id: true } });
+    const found = await prisma.analysis.findFirst({ where: { id, userId: req.user!.id }, select: { id: true } });
     if (!found) throw new AppError(404, 'Analysis not found.');
     const analysis = await prisma.analysis.update({ where: { id }, data: {
       jobUrl: details.jobUrl ?? null, salary: details.salary ?? null,
@@ -128,7 +130,7 @@ export async function compareAnalysisVersions(req: Request, res: Response, next:
     const previousId = Array.isArray(req.params.previousId) ? req.params.previousId[0] : req.params.previousId;
     if (id === previousId) throw new AppError(400, 'Choose two different analyses to compare.');
     const [current, previous] = await Promise.all([
-      prisma.analysis.findUnique({ where: { id } }), prisma.analysis.findUnique({ where: { id: previousId } }),
+      prisma.analysis.findFirst({ where: { id, userId: req.user!.id } }), prisma.analysis.findFirst({ where: { id: previousId, userId: req.user!.id } }),
     ]);
     if (!current || !previous) throw new AppError(404, 'One or both analyses were not found.');
     res.json({ data: compareAnalyses(current as unknown as ComparableAnalysis, previous as unknown as ComparableAnalysis) });
@@ -138,7 +140,7 @@ export async function compareAnalysisVersions(req: Request, res: Response, next:
 export async function downloadAnalysisReport(req: Request, res: Response, next: NextFunction) {
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-    const analysis = await prisma.analysis.findUnique({ where: { id } });
+    const analysis = await prisma.analysis.findFirst({ where: { id, userId: req.user!.id } });
     if (!analysis) throw new AppError(404, 'Analysis not found.');
     const report = await generateReportWithPython(analysis);
     const safeName = analysis.fileName.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -158,7 +160,7 @@ export async function previewResumeText(req: Request, res: Response, next: NextF
 export async function deleteAnalysis(req: Request, res: Response, next: NextFunction) {
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-    const found = await prisma.analysis.findUnique({ where: { id } });
+    const found = await prisma.analysis.findFirst({ where: { id, userId: req.user!.id } });
     if (!found) throw new AppError(404, 'Analysis not found.');
     await prisma.analysis.delete({ where: { id } });
     res.status(204).send();
