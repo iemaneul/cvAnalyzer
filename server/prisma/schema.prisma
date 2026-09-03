@@ -14,6 +14,10 @@ model Analysis {
   jobTitle        String?
   company         String?
   applicationStatus String @default("planned")
+  jobUrl          String?
+  salary          String?
+  workMode        String?
+  notes           String?
   jobDescription String
   score          Int
   resumeSkills   Json

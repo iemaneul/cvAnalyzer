@@ -1,0 +1,5 @@
+ALTER TABLE "Analysis"
+ADD COLUMN "jobUrl" TEXT,
+ADD COLUMN "salary" TEXT,
+ADD COLUMN "workMode" TEXT,
+ADD COLUMN "notes" TEXT;

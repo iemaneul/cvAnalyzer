@@ -27,6 +27,10 @@ export function useUpdateApplicationStatus() { const client = useQueryClient(); 
   mutationFn: async ({ id, status }: { id: string; status: NonNullable<Analysis['applicationStatus']> }) => (await api.patch<{data: Analysis}>(`/analyses/${id}/status`, { status })).data.data,
   onSuccess: (analysis) => { client.setQueryData(['analyses', analysis.id], analysis); client.invalidateQueries({ queryKey: ['analyses'] }); },
 }); }
+export function useUpdateApplicationDetails() { const client = useQueryClient(); return useMutation({
+  mutationFn: async ({ id, ...details }: { id: string; jobUrl?: string; salary?: string; workMode?: Analysis['workMode']; notes?: string }) => (await api.patch<{data: Analysis}>(`/analyses/${id}/application-details`, details)).data.data,
+  onSuccess: (analysis) => { client.setQueryData(['analyses', analysis.id], analysis); client.invalidateQueries({ queryKey: ['analyses'] }); },
+}); }
 export function useAnalysisDashboard() { return useQuery({ queryKey: ['analyses', 'dashboard'], queryFn: async () => (await api.get<{data: AnalysisDashboard}>('/analyses/dashboard')).data.data }); }
 export function useAnalysisComparison(id?: string, previousId?: string) { return useQuery({
   queryKey: ['analyses', id, 'compare', previousId], enabled: !!id && !!previousId,

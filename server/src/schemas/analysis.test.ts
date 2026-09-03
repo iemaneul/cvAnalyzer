@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { analysisListQuerySchema, applicationStatusSchema, jobContextSchema } from './analysis.js';
+import { analysisListQuerySchema, applicationDetailsSchema, applicationStatusSchema, jobContextSchema } from './analysis.js';
 
 describe('jobContextSchema', () => {
   it('requires a meaningful job title and accepts an optional company', () => {
@@ -13,6 +13,14 @@ describe('applicationStatusSchema', () => {
   it('accepts supported application stages only', () => {
     expect(applicationStatusSchema.parse({ status: 'interview' })).toEqual({ status: 'interview' });
     expect(() => applicationStatusSchema.parse({ status: 'waiting' })).toThrow();
+  });
+});
+
+describe('applicationDetailsSchema', () => {
+  it('normalizes optional application information', () => {
+    expect(applicationDetailsSchema.parse({ jobUrl: 'https://example.com/jobs/1', salary: ' R$ 8.000 ', workMode: 'remote', notes: '' }))
+      .toEqual({ jobUrl: 'https://example.com/jobs/1', salary: 'R$ 8.000', workMode: 'remote', notes: undefined });
+    expect(() => applicationDetailsSchema.parse({ jobUrl: 'not-a-url' })).toThrow();
   });
 });
 

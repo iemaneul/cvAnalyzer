@@ -75,6 +75,13 @@ export const jobContextSchema = z.object({
 export const applicationStatusSchema = z.object({
   status: z.enum(['planned', 'applied', 'interview', 'offer', 'closed']),
 });
+const emptyToUndefined = (value: unknown) => typeof value === 'string' && value.trim() === '' ? undefined : value;
+export const applicationDetailsSchema = z.object({
+  jobUrl: z.preprocess(emptyToUndefined, z.url('Enter a valid job URL.').max(500).optional()),
+  salary: z.preprocess(emptyToUndefined, z.string().trim().max(80, 'Salary is too long.').optional()),
+  workMode: z.preprocess(emptyToUndefined, z.enum(['remote', 'hybrid', 'onsite']).optional()),
+  notes: z.preprocess(emptyToUndefined, z.string().trim().max(2000, 'Notes are too long.').optional()),
+});
 const optionalQueryText = (max: number) => z.preprocess(
   (value) => typeof value === 'string' && value.trim() === '' ? undefined : value,
   z.string().trim().max(max).optional(),
