@@ -3,7 +3,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
-import { analysisListQuerySchema, jobContextSchema, jobDescriptionSchema } from '../schemas/analysis.js';
+import { analysisListQuerySchema, applicationStatusSchema, jobContextSchema, jobDescriptionSchema } from '../schemas/analysis.js';
 import { analyzeWithPython, extractTextWithPython, generateReportWithPython } from '../services/python.service.js';
 import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
@@ -44,7 +44,7 @@ export async function createAnalysis(req: Request, res: Response, next: NextFunc
 
 export async function listAnalyses(req: Request, res: Response, next: NextFunction) {
   try {
-    const { page, limit, search, minScore, maxScore, dateFrom, dateTo } = analysisListQuerySchema.parse(req.query);
+    const { page, limit, search, status, minScore, maxScore, dateFrom, dateTo } = analysisListQuerySchema.parse(req.query);
     const dateToExclusive = dateTo ? new Date(`${dateTo}T00:00:00.000Z`) : undefined;
     dateToExclusive?.setUTCDate(dateToExclusive.getUTCDate() + 1);
     const where: Prisma.AnalysisWhereInput = {
@@ -52,6 +52,7 @@ export async function listAnalyses(req: Request, res: Response, next: NextFuncti
         { jobTitle: { contains: search, mode: 'insensitive' } },
         { company: { contains: search, mode: 'insensitive' } },
       ] }),
+      ...(status && { applicationStatus: status }),
       ...((minScore !== undefined || maxScore !== undefined) && { score: { gte: minScore, lte: maxScore } }),
       ...((dateFrom || dateTo) && { createdAt: {
         ...(dateFrom && { gte: new Date(`${dateFrom}T00:00:00.000Z`) }),
@@ -92,6 +93,17 @@ export async function updateAnalysisContext(req: Request, res: Response, next: N
     const found = await prisma.analysis.findUnique({ where: { id }, select: { id: true } });
     if (!found) throw new AppError(404, 'Analysis not found.');
     const analysis = await prisma.analysis.update({ where: { id }, data: { jobTitle, company: company ?? null } });
+    res.json({ data: analysis });
+  } catch (error) { next(error); }
+}
+
+export async function updateApplicationStatus(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    const { status } = applicationStatusSchema.parse(req.body);
+    const found = await prisma.analysis.findUnique({ where: { id }, select: { id: true } });
+    if (!found) throw new AppError(404, 'Analysis not found.');
+    const analysis = await prisma.analysis.update({ where: { id }, data: { applicationStatus: status } });
     res.json({ data: analysis });
   } catch (error) { next(error); }
 }

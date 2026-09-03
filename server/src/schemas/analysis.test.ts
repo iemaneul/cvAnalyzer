@@ -1,11 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { analysisListQuerySchema, jobContextSchema } from './analysis.js';
+import { analysisListQuerySchema, applicationStatusSchema, jobContextSchema } from './analysis.js';
 
 describe('jobContextSchema', () => {
   it('requires a meaningful job title and accepts an optional company', () => {
     expect(jobContextSchema.parse({ jobTitle: ' Backend Developer ', company: '' })).toEqual({ jobTitle: 'Backend Developer', company: undefined });
     expect(jobContextSchema.parse({ jobTitle: 'Designer', company: ' Acme ' })).toEqual({ jobTitle: 'Designer', company: 'Acme' });
     expect(() => jobContextSchema.parse({ jobTitle: ' ' })).toThrow();
+  });
+});
+
+describe('applicationStatusSchema', () => {
+  it('accepts supported application stages only', () => {
+    expect(applicationStatusSchema.parse({ status: 'interview' })).toEqual({ status: 'interview' });
+    expect(() => applicationStatusSchema.parse({ status: 'waiting' })).toThrow();
   });
 });
 

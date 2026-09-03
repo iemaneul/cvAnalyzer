@@ -1,5 +1,6 @@
 export interface Analysis {
   id: string; fileName: string; jobTitle?: string | null; company?: string | null; jobDescription: string; score: number;
+  applicationStatus?: 'planned' | 'applied' | 'interview' | 'offer' | 'closed';
   extractionMethod?: 'native' | 'ocr';
   resumeSkills: string[]; jobSkills: string[]; matchedSkills: string[];
   missingSkills: string[]; suggestions: string[]; createdAt: string;

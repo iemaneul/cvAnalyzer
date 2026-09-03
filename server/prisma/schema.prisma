@@ -13,6 +13,7 @@ model Analysis {
   extractionMethod String?
   jobTitle        String?
   company         String?
+  applicationStatus String @default("planned")
   jobDescription String
   score          Int
   resumeSkills   Json

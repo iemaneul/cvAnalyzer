@@ -72,6 +72,9 @@ export const jobContextSchema = z.object({
     z.string().trim().max(120, 'Company name is too long.').optional(),
   ),
 });
+export const applicationStatusSchema = z.object({
+  status: z.enum(['planned', 'applied', 'interview', 'offer', 'closed']),
+});
 const optionalQueryText = (max: number) => z.preprocess(
   (value) => typeof value === 'string' && value.trim() === '' ? undefined : value,
   z.string().trim().max(max).optional(),
@@ -83,6 +86,7 @@ export const analysisListQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
   search: optionalQueryText(120),
+  status: z.preprocess((value) => value === '' ? undefined : value, applicationStatusSchema.shape.status.optional()),
   minScore: z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().int().min(0).max(100).optional()),
   maxScore: z.preprocess((value) => value === '' ? undefined : value, z.coerce.number().int().min(0).max(100).optional()),
   dateFrom: optionalQueryText(10).refine(isIsoDate, 'Invalid start date.'),

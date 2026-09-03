@@ -13,7 +13,7 @@ export function useExtractResumeText() { return useMutation({ mutationFn: async 
   const form = new FormData(); form.append('resume', file);
   return (await api.post<{data: {text: string; characters: number; method: 'native' | 'ocr'; pages: number}}>('/extract', form)).data.data;
 } }); }
-export type AnalysisFilters = { search?: string; minScore?: number; maxScore?: number; dateFrom?: string; dateTo?: string };
+export type AnalysisFilters = { search?: string; status?: Analysis['applicationStatus']; minScore?: number; maxScore?: number; dateFrom?: string; dateTo?: string };
 export function useAnalyses(page = 1, limit = 10, filters: AnalysisFilters = {}) { return useQuery({
   queryKey: ['analyses', { page, limit, ...filters }],
   queryFn: async () => (await api.get<PaginatedAnalyses>('/analyses', { params: { page, limit, ...filters } })).data,
@@ -21,6 +21,10 @@ export function useAnalyses(page = 1, limit = 10, filters: AnalysisFilters = {})
 export function useAnalysis(id?: string) { return useQuery({ queryKey: ['analyses', id], enabled: !!id, queryFn: async () => (await api.get<{data: Analysis}>(`/analyses/${id}`)).data.data }); }
 export function useUpdateAnalysisContext() { const client = useQueryClient(); return useMutation({
   mutationFn: async ({ id, jobTitle, company }: { id: string; jobTitle: string; company?: string }) => (await api.patch<{data: Analysis}>(`/analyses/${id}/context`, { jobTitle, company })).data.data,
+  onSuccess: (analysis) => { client.setQueryData(['analyses', analysis.id], analysis); client.invalidateQueries({ queryKey: ['analyses'] }); },
+}); }
+export function useUpdateApplicationStatus() { const client = useQueryClient(); return useMutation({
+  mutationFn: async ({ id, status }: { id: string; status: NonNullable<Analysis['applicationStatus']> }) => (await api.patch<{data: Analysis}>(`/analyses/${id}/status`, { status })).data.data,
   onSuccess: (analysis) => { client.setQueryData(['analyses', analysis.id], analysis); client.invalidateQueries({ queryKey: ['analyses'] }); },
 }); }
 export function useAnalysisDashboard() { return useQuery({ queryKey: ['analyses', 'dashboard'], queryFn: async () => (await api.get<{data: AnalysisDashboard}>('/analyses/dashboard')).data.data }); }

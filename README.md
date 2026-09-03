@@ -18,6 +18,7 @@ Resume structure analysis checks essential sections, professional links, approxi
 
 Each analysis records the job title and, optionally, the company. These details appear in history, analysis details, comparisons, and exported reports, while records created before this feature remain readable.
 Saved job titles and companies can be corrected from the analysis details without rerunning resume processing.
+Applications can be tracked as planned, applied, interview, offer, or closed, with status filtering in history.
 
 The history supports server-side search by job title or company, score ranges, and date intervals. Filters are applied before pagination so result totals and page counts remain accurate.
 
@@ -118,6 +119,7 @@ Open http://localhost:5173.
 - `GET /api/analyses/dashboard` — progress metrics, recent score trend, and position/company rankings
 - `GET /api/analyses/:id` — complete result
 - `PATCH /api/analyses/:id/context` — update the saved job title and optional company
+- `PATCH /api/analyses/:id/status` — update the application stage
 - `DELETE /api/analyses/:id` — remove a result
 
 Success responses use `{ "data": ... }`; errors use `{ "error": { "message": "..." } }`.

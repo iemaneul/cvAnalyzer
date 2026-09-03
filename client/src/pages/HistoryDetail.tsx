@@ -2,8 +2,9 @@ import { Check, GitCompareArrows, Loader2, Pencil, Trash2, X } from 'lucide-reac
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Result } from '../components/Result';
-import { useAnalyses, useAnalysis, useDeleteAnalysis, useUpdateAnalysisContext } from '../hooks/analyses';
+import { useAnalyses, useAnalysis, useDeleteAnalysis, useUpdateAnalysisContext, useUpdateApplicationStatus } from '../hooks/analyses';
 import { errorMessage } from '../services/api';
+import { applicationStatuses, applicationStatusStyle } from '../application-status';
 
 export function HistoryDetail() {
   const { id } = useParams();
@@ -16,6 +17,7 @@ export function HistoryDetail() {
   const { data: analyses } = useAnalyses(1, 100);
   const remove = useDeleteAnalysis();
   const updateContext = useUpdateAnalysisContext();
+  const updateStatus = useUpdateApplicationStatus();
 
   useEffect(() => {
     if (data && !editing) { setJobTitle(data.jobTitle ?? ''); setCompany(data.company ?? ''); }
@@ -55,6 +57,16 @@ export function HistoryDetail() {
           if (id && confirm('Delete this analysis?')) remove.mutate(id, { onSuccess: () => navigate('/history') });
         }} className="flex items-center justify-center gap-2 rounded-lg border border-rose-200 px-4 py-2 text-sm text-rose-700 hover:bg-rose-50"><Trash2 size={16} /> Delete</button>
       </div>
+    </div>
+    <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-4">
+      <span className={`rounded-full px-3 py-1 text-sm font-semibold ${applicationStatusStyle[data.applicationStatus ?? 'planned']}`}>{applicationStatuses.find((status) => status.value === (data.applicationStatus ?? 'planned'))?.label}</span>
+      <label className="text-sm font-medium text-slate-600">Move application to
+        <select disabled={updateStatus.isPending} value={data.applicationStatus ?? 'planned'} onChange={(event) => id && updateStatus.mutate({ id, status: event.target.value as NonNullable<typeof data.applicationStatus> })} className="ml-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-800 outline-none focus:border-indigo-500">
+          {applicationStatuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
+        </select>
+      </label>
+      {updateStatus.isPending && <Loader2 className="animate-spin text-indigo-600" size={18} />}
+      {updateStatus.error && <span className="text-sm text-rose-700">{errorMessage(updateStatus.error)}</span>}
     </div>
     {previousOptions.length > 0 && <div className="mt-6 flex flex-col gap-3 rounded-xl border border-indigo-100 bg-indigo-50 p-4 sm:flex-row sm:items-end">
       <label className="flex-1 text-sm font-medium text-indigo-950">Compare with a previous version
