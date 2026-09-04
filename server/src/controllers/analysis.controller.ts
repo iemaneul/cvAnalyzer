@@ -73,7 +73,7 @@ export async function getAnalysisDashboard(req: Request, res: Response, next: Ne
   try {
     const analyses = await prisma.analysis.findMany({
       where: { userId: req.user!.id },
-      select: { id: true, jobTitle: true, company: true, score: true, createdAt: true },
+      select: { id: true, jobTitle: true, company: true, score: true, applicationStatus: true, createdAt: true },
     });
     res.json({ data: buildDashboard(analyses) });
   } catch (error) { next(error); }

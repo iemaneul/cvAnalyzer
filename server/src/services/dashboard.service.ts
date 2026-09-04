@@ -3,6 +3,7 @@ export interface DashboardAnalysis {
   jobTitle: string | null;
   company: string | null;
   score: number;
+  applicationStatus: string;
   createdAt: Date;
 }
 
@@ -19,6 +20,9 @@ export function buildDashboard(analyses: DashboardAnalysis[]) {
   const chronological = [...analyses].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   const best = analyses.reduce<DashboardAnalysis | null>((current, item) => !current || item.score > current.score ? item : current, null);
   const averageScore = analyses.length ? Math.round((analyses.reduce((sum, item) => sum + item.score, 0) / analyses.length) * 10) / 10 : 0;
+  const pipeline = ['planned', 'applied', 'interview', 'offer', 'closed'].map((status) => ({
+    status, count: analyses.filter((item) => item.applicationStatus === status).length,
+  }));
   return {
     summary: {
       total: analyses.length,
@@ -30,5 +34,6 @@ export function buildDashboard(analyses: DashboardAnalysis[]) {
     trend: chronological.slice(-12).map(({ id, jobTitle, company, score, createdAt }) => ({ id, jobTitle, company, score, createdAt })),
     topJobTitles: rankValues(analyses.map((item) => item.jobTitle)),
     topCompanies: rankValues(analyses.map((item) => item.company)),
+    pipeline,
   };
 }

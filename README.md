@@ -26,6 +26,7 @@ Each saved application can also keep its original job URL, salary information, w
 The history supports server-side search by job title or company, score ranges, and date intervals. Filters are applied before pagination so result totals and page counts remain accurate.
 
 The progress dashboard summarizes total and average analyses, best match, overall score change, the latest score trend, and the most frequently analyzed positions and companies.
+It also includes an application pipeline grouped by planned, applied, interview, offer, and closed stages.
 
 Responsive navigation, mobile history cards, stacked comparison content, and touch-friendly result actions keep the main workflows usable on small screens.
 

@@ -64,4 +64,5 @@ export interface AnalysisDashboard {
   trend: Array<{ id: string; jobTitle: string | null; company: string | null; score: number; createdAt: string }>;
   topJobTitles: Array<{ name: string; count: number }>;
   topCompanies: Array<{ name: string; count: number }>;
+  pipeline: Array<{ status: NonNullable<Analysis['applicationStatus']>; count: number }>;
 }

@@ -1,6 +1,7 @@
 import { Award, BarChart3, BriefcaseBusiness, Building2, Loader2, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAnalysisDashboard } from '../hooks/analyses';
+import { applicationStatuses, applicationStatusStyle } from '../application-status';
 
 function Metric({ label, value, detail, icon: Icon }: { label: string; value: string; detail: string; icon: typeof BarChart3 }) {
   return <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -57,5 +58,13 @@ export function Dashboard() {
       <Ranking title="Most analyzed positions" items={data.topJobTitles} icon={BriefcaseBusiness} />
       <Ranking title="Most analyzed companies" items={data.topCompanies} icon={Building2} />
     </div>
+    <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="font-semibold">Application pipeline</h2>
+      <p className="mt-1 text-sm text-slate-500">See where your active opportunities are concentrated.</p>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{data.pipeline.map((stage) => <div key={stage.status} className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${applicationStatusStyle[stage.status]}`}>{applicationStatuses.find((item) => item.value === stage.status)?.label}</span>
+        <strong className="mt-4 block text-3xl text-slate-900">{stage.count}</strong><span className="text-xs text-slate-400">applications</span>
+      </div>)}</div>
+    </section>
   </div>;
 }
