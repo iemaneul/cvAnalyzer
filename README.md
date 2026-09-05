@@ -22,6 +22,7 @@ Each analysis records the job title and, optionally, the company. These details 
 Saved job titles and companies can be corrected from the analysis details without rerunning resume processing.
 Applications can be tracked as planned, applied, interview, offer, or closed, with status filtering in history.
 Each saved application can also keep its original job URL, salary information, work mode, and private notes.
+The authenticated user can export the complete application history as a spreadsheet-safe UTF-8 CSV file.
 
 The history supports server-side search by job title or company, score ranges, and date intervals. Filters are applied before pagination so result totals and page counts remain accurate.
 
@@ -128,6 +129,7 @@ Open http://localhost:5173.
 - `POST /api/analyze` — multipart fields `resume` (PDF, maximum 5 MB), `jobTitle` (2–120 characters), optional `company` (maximum 120 characters), `jobDescription` (minimum 50 characters), and optional `saveAnalysis`
 - `GET /api/analyses` — newest analyses first; accepts `page`, `limit`, `search`, `minScore`, `maxScore`, `dateFrom`, and `dateTo`
 - `GET /api/analyses/dashboard` — progress metrics, recent score trend, and position/company rankings
+- `GET /api/analyses/export` — download the authenticated user's application history as CSV
 - `GET /api/analyses/:id` — complete result
 - `PATCH /api/analyses/:id/context` — update the saved job title and optional company
 - `PATCH /api/analyses/:id/status` — update the application stage

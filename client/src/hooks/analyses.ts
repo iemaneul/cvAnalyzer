@@ -32,6 +32,11 @@ export function useUpdateApplicationDetails() { const client = useQueryClient();
   onSuccess: (analysis) => { client.setQueryData(['analyses', analysis.id], analysis); client.invalidateQueries({ queryKey: ['analyses'] }); },
 }); }
 export function useAnalysisDashboard() { return useQuery({ queryKey: ['analyses', 'dashboard'], queryFn: async () => (await api.get<{data: AnalysisDashboard}>('/analyses/dashboard')).data.data }); }
+export function useExportAnalyses() { return useMutation({ mutationFn: async () => {
+  const response = await api.get('/analyses/export', { responseType: 'blob' });
+  const url = URL.createObjectURL(response.data); const link = document.createElement('a');
+  link.href = url; link.download = 'cv-analyzer-applications.csv'; link.click(); URL.revokeObjectURL(url);
+} }); }
 export function useAnalysisComparison(id?: string, previousId?: string) { return useQuery({
   queryKey: ['analyses', id, 'compare', previousId], enabled: !!id && !!previousId,
   queryFn: async () => (await api.get<{data: AnalysisComparison}>(`/analyses/${id}/compare/${previousId}`)).data.data,

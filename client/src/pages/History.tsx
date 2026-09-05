@@ -1,7 +1,7 @@
-import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download, Loader2, Search, X } from 'lucide-react';
 import { useDeferredValue, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAnalyses } from '../hooks/analyses';
+import { useAnalyses, useExportAnalyses } from '../hooks/analyses';
 import { applicationStatuses, applicationStatusStyle } from '../application-status';
 import type { Analysis } from '../types';
 
@@ -18,11 +18,11 @@ export function History() {
       : scoreRange === 'low' ? { maxScore: 49 } : {};
   const filters = { search: deferredSearch || undefined, status: status === 'all' ? undefined : status, dateFrom: dateFrom || undefined, dateTo: dateTo || undefined, ...scoreFilters };
   const { data, isLoading, error } = useAnalyses(page, 10, filters);
+  const exportCsv = useExportAnalyses();
   const hasFilters = Boolean(search || dateFrom || dateTo || scoreRange !== 'all' || status !== 'all');
   const resetFilters = () => { setSearch(''); setScoreRange('all'); setStatus('all'); setDateFrom(''); setDateTo(''); setPage(1); };
   return <div>
-    <h1 className="text-3xl font-bold">Analysis history</h1>
-    <p className="mt-2 text-slate-500">Review and compare your previous resume matches.</p>
+    <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start"><div><h1 className="text-3xl font-bold">Analysis history</h1><p className="mt-2 text-slate-500">Review and compare your previous resume matches.</p></div><button disabled={!data?.meta.total || exportCsv.isPending} onClick={() => exportCsv.mutate()} className="flex items-center justify-center gap-2 rounded-lg border border-indigo-200 px-4 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-50 disabled:opacity-40">{exportCsv.isPending ? <Loader2 className="animate-spin" size={16} /> : <Download size={16} />} Export CSV</button></div>
     <div className="mt-7 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
         <label className="relative lg:col-span-2">

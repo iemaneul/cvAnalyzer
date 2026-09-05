@@ -9,6 +9,7 @@ import { AppError } from '../utils/AppError.js';
 import { compareAnalyses, type ComparableAnalysis } from '../services/comparison.service.js';
 import { buildDashboard } from '../services/dashboard.service.js';
 import { shouldSaveAnalysis } from '../utils/privacy.js';
+import { buildApplicationsCsv } from '../services/csv.service.js';
 
 export async function createAnalysis(req: Request, res: Response, next: NextFunction) {
   try {
@@ -76,6 +77,18 @@ export async function getAnalysisDashboard(req: Request, res: Response, next: Ne
       select: { id: true, jobTitle: true, company: true, score: true, applicationStatus: true, createdAt: true },
     });
     res.json({ data: buildDashboard(analyses) });
+  } catch (error) { next(error); }
+}
+
+export async function exportAnalysesCsv(req: Request, res: Response, next: NextFunction) {
+  try {
+    const analyses = await prisma.analysis.findMany({
+      where: { userId: req.user!.id }, orderBy: { createdAt: 'desc' },
+      select: { jobTitle: true, company: true, applicationStatus: true, score: true, fileName: true, jobUrl: true, salary: true, workMode: true, notes: true, createdAt: true },
+    });
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="cv-analyzer-applications.csv"');
+    res.send(buildApplicationsCsv(analyses));
   } catch (error) { next(error); }
 }
 
