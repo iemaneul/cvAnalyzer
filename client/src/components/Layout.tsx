@@ -1,4 +1,4 @@
-import { ChartNoAxesCombined, FileCheck2, FileSearch, History, LogOut } from 'lucide-react';
+import { ChartNoAxesCombined, FileCheck2, FileSearch, History, LogOut, UserRound } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth';
 
@@ -14,6 +14,7 @@ export function Layout() {
         <NavLink to="/dashboard" title="Dashboard" className={navClass}><ChartNoAxesCombined size={16} /><span className="hidden sm:inline">Dashboard</span></NavLink>
         <NavLink to="/history" title="History" className={navClass}><History size={16} /><span className="hidden sm:inline">History</span></NavLink>
         <span className="ml-2 hidden text-sm text-slate-500 lg:inline">{user?.name}</span>
+        <NavLink to="/account" title="Account" aria-label="Account" className={navClass}><UserRound size={17} /></NavLink>
         <button onClick={logout} title="Sign out" aria-label="Sign out" className="ml-1 rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-rose-600"><LogOut size={17} /></button>
       </nav>
     </div></header>

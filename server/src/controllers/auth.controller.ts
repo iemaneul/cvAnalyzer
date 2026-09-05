@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma.js';
-import { loginSchema, registerSchema } from '../schemas/auth.js';
+import { changePasswordSchema, loginSchema, registerSchema, updateProfileSchema } from '../schemas/auth.js';
 import { createAccessToken } from '../services/auth.service.js';
 import { AppError } from '../utils/AppError.js';
 
@@ -36,5 +36,27 @@ export async function me(req: Request, res: Response, next: NextFunction) {
     const user = await prisma.user.findUnique({ where: { id: req.user!.id }, select: { id: true, name: true, email: true } });
     if (!user) throw new AppError(401, 'Account not found.');
     res.json({ data: user });
+  } catch (error) { next(error); }
+}
+
+export async function updateProfile(req: Request, res: Response, next: NextFunction) {
+  try {
+    const input = updateProfileSchema.parse(req.body);
+    const user = await prisma.user.update({ where: { id: req.user!.id }, data: input });
+    const safeUser = publicUser(user);
+    res.json({ data: { user: safeUser, token: createAccessToken(safeUser) } });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return next(new AppError(409, 'An account with this email already exists.'));
+    next(error);
+  }
+}
+
+export async function changePassword(req: Request, res: Response, next: NextFunction) {
+  try {
+    const input = changePasswordSchema.parse(req.body);
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
+    if (!user || !await bcrypt.compare(input.currentPassword, user.passwordHash)) throw new AppError(400, 'Current password is incorrect.');
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash: await bcrypt.hash(input.newPassword, 12) } });
+    res.status(204).send();
   } catch (error) { next(error); }
 }

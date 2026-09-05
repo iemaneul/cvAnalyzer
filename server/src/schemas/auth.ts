@@ -7,3 +7,10 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = registerSchema.pick({ email: true, password: true });
+export const updateProfileSchema = registerSchema.pick({ name: true, email: true });
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required.'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters.').max(72),
+}).refine(({ currentPassword, newPassword }) => currentPassword !== newPassword, {
+  message: 'New password must be different.', path: ['newPassword'],
+});
