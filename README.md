@@ -29,6 +29,7 @@ The history supports server-side search by job title or company, score ranges, a
 
 The progress dashboard summarizes total and average analyses, best match, overall score change, the latest score trend, and the most frequently analyzed positions and companies.
 It also includes an application pipeline grouped by planned, applied, interview, offer, and closed stages.
+The application board presents those stages as a responsive Kanban view and lets users move opportunities directly between columns.
 
 Responsive navigation, mobile history cards, stacked comparison content, and touch-friendly result actions keep the main workflows usable on small screens.
 

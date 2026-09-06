@@ -1,4 +1,4 @@
-import { ChartNoAxesCombined, FileCheck2, FileSearch, History, LogOut, UserRound } from 'lucide-react';
+import { ChartNoAxesCombined, Columns3, FileCheck2, FileSearch, History, LogOut, UserRound } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth';
 
@@ -12,6 +12,7 @@ export function Layout() {
       <nav className="flex items-center gap-1">
         <NavLink to="/" title="Analyze" className={navClass}><FileCheck2 size={16} /><span className="hidden sm:inline">Analyze</span></NavLink>
         <NavLink to="/dashboard" title="Dashboard" className={navClass}><ChartNoAxesCombined size={16} /><span className="hidden sm:inline">Dashboard</span></NavLink>
+        <NavLink to="/board" title="Application board" aria-label="Application board" className={navClass}><Columns3 size={16} /></NavLink>
         <NavLink to="/history" title="History" className={navClass}><History size={16} /><span className="hidden sm:inline">History</span></NavLink>
         <span className="ml-2 hidden text-sm text-slate-500 lg:inline">{user?.name}</span>
         <NavLink to="/account" title="Account" aria-label="Account" className={navClass}><UserRound size={17} /></NavLink>
